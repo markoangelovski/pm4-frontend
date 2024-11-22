@@ -1,16 +1,16 @@
-import { useSearchParams, useRouter } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { ApiResponse, User } from "@/types";
+import { useEffect } from "react";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL1;
 const loginPath = process.env.NEXT_PUBLIC_USER_LOGIN_PATH;
+const authPath = process.env.NEXT_PUBLIC_USER_AUTH_PATH;
 
 export const useLogin = () => {
-  const router = useRouter(); // Import and use useRouter
-
+  const router = useRouter();
   const searchParams = useSearchParams();
   const cb = searchParams.get("cb");
-
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -35,10 +35,37 @@ export const useLogin = () => {
       queryClient.setQueryData(["user"], data);
       sessionStorage.setItem("access", JSON.stringify(data.data[0]));
       const redirectUrl = cb ? decodeURIComponent(cb) : "/";
-      router.push(redirectUrl);
+      router.replace(redirectUrl); // Use replace to avoid history stack issues
     },
     onError: (error) => {
       console.error("Login failed:", error);
+      // Consider adding a more user-friendly error message
     },
   });
+};
+
+export const useAuth = () => {
+  const errPayload = {
+    hasErrors: true,
+    statusCode: 401,
+    message: "Unauthorized",
+    data: [],
+  };
+
+  const { data, isError, isLoading } = useQuery({
+    queryKey: ["auth"],
+    queryFn: (): Promise<ApiResponse<User[]>> => {
+      const access = window.sessionStorage.getItem("access");
+      const accessParsed = access ? JSON.parse(access) : null;
+      if (!accessParsed) return Promise.resolve(errPayload);
+
+      return fetch(`${backendUrl}${authPath}`, {
+        headers: {
+          Authorization: `Bearer ${accessParsed.secret}`,
+        },
+      }).then((res) => res.json());
+    },
+  });
+
+  return { isLoading, isError, data };
 };
