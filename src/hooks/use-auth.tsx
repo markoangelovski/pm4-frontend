@@ -45,19 +45,18 @@ export const useLogin = () => {
 };
 
 export const useAuth = () => {
-  const errPayload = {
-    hasErrors: true,
-    statusCode: 401,
-    message: "Unauthorized",
-    data: [],
-  };
-
-  const { data, isError, isLoading } = useQuery({
+  return useQuery({
     queryKey: ["auth"],
     queryFn: (): Promise<ApiResponse<User[]>> => {
       const access = window.sessionStorage.getItem("access");
       const accessParsed = access ? JSON.parse(access) : null;
-      if (!accessParsed) return Promise.resolve(errPayload);
+      if (!accessParsed)
+        return Promise.resolve({
+          hasErrors: true,
+          statusCode: 401,
+          message: "Unauthorized",
+          data: [],
+        });
 
       return fetch(`${backendUrl}${authPath}`, {
         headers: {
@@ -66,6 +65,4 @@ export const useAuth = () => {
       }).then((res) => res.json());
     },
   });
-
-  return { isLoading, isError, data };
 };

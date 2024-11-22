@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLogin } from "@/hooks/use-auth";
 
@@ -15,11 +15,32 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const { mutate: login, isPending, error } = useLogin();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const hasError = searchParams.get("error");
+
+  // Display error message if present
+  hasError &&
+    toast({
+      description: hasError,
+      variant: "destructive",
+    });
+
+  useEffect(() => {
+    // Remove error message from URL after displaying it
+    const params = new URLSearchParams(searchParams);
+    params.delete("error");
+    router.replace(`?${params}`);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
