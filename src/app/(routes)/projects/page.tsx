@@ -39,8 +39,9 @@ function ProjectsComponent() {
 
     switch (sortType) {
       case "title":
-        projectsData?.data?.sort((a, b) => a.title.localeCompare(b.title));
-        setReRender(!reRender);
+        projectsData?.data?.sort((a, b) =>
+          a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+        );
         break;
       case "newest":
         projectsData?.data?.sort(
@@ -48,17 +49,23 @@ function ProjectsComponent() {
             new Date(b.createdAt || "").getTime() -
             new Date(a.createdAt || "").getTime()
         );
-        setReRender(!reRender);
+        break;
+      case "oldest":
+        projectsData?.data?.sort(
+          (a, b) =>
+            new Date(a.createdAt || "").getTime() -
+            new Date(b.createdAt || "").getTime()
+        );
         break;
       case "updated":
         projectsData?.data?.sort(
           (a, b) =>
-            new Date(b.updatedAt || b.createdAt || "").getTime() -
-            new Date(a.updatedAt || a.createdAt || "").getTime()
+            new Date(b.modifiedAt || b.createdAt || "").getTime() -
+            new Date(a.modifiedAt || a.createdAt || "").getTime()
         );
-        setReRender(!reRender);
         break;
     }
+    setReRender(!reRender);
   };
 
   const handleFilter = (filter: string | null) => {
@@ -105,10 +112,11 @@ function ProjectsComponent() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Project Name</TableHead>
+                  <TableHead>Project Title</TableHead>
                   <TableHead>Program Lead</TableHead>
                   <TableHead>Tasks</TableHead>
                   <TableHead>Created</TableHead>
+                  <TableHead>Modified</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -161,6 +169,7 @@ function Row({ project, link }: { project: Project; link: () => void }) {
           0 + (project.inProgressTasks || 0) + (project.doneTasks || 0)}
       </TableCell>
       <TableCell>{format(project.createdAt || "", "dd.MM.yyyy")}</TableCell>
+      <TableCell>{format(project.modifiedAt || "", "dd.MM.yyyy")}</TableCell>
     </TableRow>
   );
 }

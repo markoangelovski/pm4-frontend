@@ -31,7 +31,7 @@ export type Project = {
   inProgressTasks?: number;
   doneTasks?: number;
   createdAt?: Date;
-  updatedAt?: Date;
+  modifiedAt?: Date;
   tasks?: Task[];
 };
 

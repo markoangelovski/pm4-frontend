@@ -88,7 +88,7 @@ const ProjectSortNew = () => {
               <Search className="text-gray-400" />
               <Input
                 type="text"
-                placeholder="Find project"
+                placeholder="Filter projects"
                 className=" w-full border-none"
                 value={searchParams.get("q") || ""}
                 onChange={(e) => router.push(`?q=${e.target.value}`)}
@@ -104,7 +104,7 @@ const ProjectSortNew = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem
-                  onSelect={() => updateQueryParam("sort", "name")}
+                  onSelect={() => updateQueryParam("sort", "title")}
                 >
                   By Title
                 </DropdownMenuItem>
@@ -112,6 +112,11 @@ const ProjectSortNew = () => {
                   onSelect={() => updateQueryParam("sort", "newest")}
                 >
                   Newest
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => updateQueryParam("sort", "oldest")}
+                >
+                  Oldest
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => updateQueryParam("sort", "updated")}
