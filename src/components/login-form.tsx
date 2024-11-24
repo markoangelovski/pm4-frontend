@@ -26,16 +26,16 @@ const LoginForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const hasError = searchParams.get("error");
-
-  // Display error message if present
-  hasError &&
-    toast({
-      description: hasError,
-      variant: "destructive",
-    });
-
   useEffect(() => {
+    const hasError = searchParams.get("error");
+
+    // Display error message if present
+    hasError &&
+      toast({
+        description: hasError,
+        variant: "destructive",
+      });
+
     // Remove error message from URL after displaying it
     const params = new URLSearchParams(searchParams);
     params.delete("error");

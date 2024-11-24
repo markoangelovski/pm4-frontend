@@ -23,15 +23,15 @@ export type User = {
 };
 
 export type Project = {
-  id: UUID;
+  id?: UUID;
   title: string;
   description?: string;
   pl: string;
-  upcomingTasks: number;
-  inProgressTasks: number;
-  doneTasks: number;
-  createdAt: Date;
-  updatedAt: Date;
+  upcomingTasks?: number;
+  inProgressTasks?: number;
+  doneTasks?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
   tasks?: Task[];
 };
 

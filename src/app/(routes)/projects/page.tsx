@@ -45,15 +45,16 @@ function ProjectsComponent() {
       case "newest":
         projectsData?.data?.sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.createdAt || "").getTime() -
+            new Date(a.createdAt || "").getTime()
         );
         setReRender(!reRender);
         break;
       case "updated":
         projectsData?.data?.sort(
           (a, b) =>
-            new Date(b.updatedAt || b.createdAt).getTime() -
-            new Date(a.updatedAt || a.createdAt).getTime()
+            new Date(b.updatedAt || b.createdAt || "").getTime() -
+            new Date(a.updatedAt || a.createdAt || "").getTime()
         );
         setReRender(!reRender);
         break;
@@ -117,14 +118,18 @@ function ProjectsComponent() {
                       <Row
                         key={project.id}
                         project={project}
-                        link={() => updateQueryParam("projectId", project.id)}
+                        link={() =>
+                          updateQueryParam("projectId", project.id || "")
+                        }
                       />
                     ))
                   : projectsData?.data?.map((project) => (
                       <Row
                         key={project.id}
                         project={project}
-                        link={() => updateQueryParam("projectId", project.id)}
+                        link={() =>
+                          updateQueryParam("projectId", project.id || "")
+                        }
                       />
                     ))}
               </TableBody>
@@ -152,9 +157,10 @@ function Row({ project, link }: { project: Project; link: () => void }) {
       </TableCell>
       <TableCell>{project.pl}</TableCell>
       <TableCell>
-        {project.upcomingTasks + project.inProgressTasks + project.doneTasks}
+        {project.upcomingTasks ||
+          0 + (project.inProgressTasks || 0) + (project.doneTasks || 0)}
       </TableCell>
-      <TableCell>{format(project.createdAt, "dd.MM.yyyy")}</TableCell>
+      <TableCell>{format(project.createdAt || "", "dd.MM.yyyy")}</TableCell>
     </TableRow>
   );
 }

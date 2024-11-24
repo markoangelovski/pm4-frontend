@@ -11,17 +11,15 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   const { isLoading, isError, data, error } = useAuth();
-  console.log("isError: ", isError);
-  console.log("AuthProvider data: ", data);
 
   if (isLoading) return <div>Loading...</div>;
 
   // Handle errors with API call
   if (isError && pathname !== "/login") {
     let redirectUrl = `/login?cb=${encodeURIComponent(
-      `${pathname}?${searchParams}&error=${encodeURIComponent(
-        error?.message || data?.message || "An error ocurred!"
-      )}`
+      `${pathname}?${searchParams}`
+    )}&error=${encodeURIComponent(
+      error?.message || data?.message || "An error ocurred!"
     )}`;
 
     router.push(redirectUrl);
@@ -42,11 +40,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push(redirectUrl);
     return <div>Redirecting...</div>;
   }
-  console.log("data", data, !data?.hasErrors && pathname === "/login");
+
   // Handle redirect to homepage if user is authenticated and the pathname is /login
   if (data && !data?.hasErrors && pathname === "/login") {
-    console.log("Are we here?");
-
     router.push("/");
     return <div>Redirecting...</div>;
   }

@@ -9,14 +9,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -24,7 +24,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown, Search } from "lucide-react";
@@ -33,9 +33,10 @@ import { v4 as uuidv4 } from "uuid";
 import { CardDescription, CardHeader } from "@/components/ui/card";
 import { Project } from "@/types";
 import { projectSchema } from "@/schemas/projects.schemas";
-import { useGetProjects } from "@/hooks/use-projects";
+import { useCreateProject, useGetProjects } from "@/hooks/use-projects";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useUpdateQueryParam } from "@/hooks/use-helpers";
+import { toast } from "@/hooks/use-toast";
 
 type NewProjectFormData = z.infer<typeof projectSchema>;
 
@@ -48,28 +49,34 @@ const ProjectSortNew = () => {
 
   const updateQueryParam = useUpdateQueryParam();
 
+  const { mutate: createProject, isPending, error } = useCreateProject();
+
+  useEffect(() => {
+    // Display error message if present
+    error &&
+      toast({
+        title: error?.name || "Error creating project",
+        description: error?.message,
+        variant: "destructive",
+      });
+  }, []);
+
   const form = useForm<NewProjectFormData>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
       title: "",
       description: "",
-      pl: ""
-    }
+      pl: "",
+    },
   });
 
   const handleNewProject = (data: NewProjectFormData) => {
-    const createdProject = {
-      ...data,
-      id: uuidv4(),
-      upcomingTasks: 0,
-      inProgressTasks: 0,
-      doneTasks: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    // setProjects([...projects, createdProject]);
-    setIsNewProjectOpen(false);
-    form.reset();
+    createProject(data, {
+      onSuccess: () => {
+        form.reset();
+        setIsNewProjectOpen(false);
+      },
+    });
   };
 
   return (
@@ -173,7 +180,9 @@ const ProjectSortNew = () => {
                       >
                         Cancel
                       </Button>
-                      <Button type="submit">Submit</Button>
+                      <Button type="submit" disabled={isPending}>
+                        {isPending ? "Creating..." : "Submit"}
+                      </Button>
                     </div>
                   </form>
                 </Form>

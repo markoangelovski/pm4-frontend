@@ -11,7 +11,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -28,7 +28,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { ArrowLeft } from "lucide-react";
 import Header from "@/components/pm/Header/Header";
@@ -47,14 +47,14 @@ export default function ProjectDetail() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get("projectId");
 
-  const { isLoading, error, data } = useGetProject(projectId || "");
+  const { data: project, isLoading, error } = useGetProject(projectId || "");
 
   const [isEditProjectOpen, setIsEditProjectOpen] = useState(false);
   const [isDeleteProjectOpen, setIsDeleteProjectOpen] = useState(false);
 
   const projectForm = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
-    defaultValues: data?.data?.[0] || {}
+    defaultValues: project?.data?.[0] || {},
   });
 
   const handleEditProject = (data: ProjectFormData) => {
@@ -70,18 +70,18 @@ export default function ProjectDetail() {
 
   // Display error using toast notification
   useEffect(() => {
-    if (error || data?.hasErrors) {
+    if (error || project?.hasErrors) {
       toast({
         title: error?.name || "Error loading projects",
-        description: error?.message || data?.message,
-        variant: "destructive"
+        description: error?.message || project?.message,
+        variant: "destructive",
       });
     }
-  }, [error, data]);
+  }, [error, project]);
 
   return (
     <>
-      <Header breadcrumbs={["Projects", data?.data?.[0]?.title || ""]} />
+      <Header breadcrumbs={["Projects", project?.data?.[0]?.title || ""]} />
       <div className="container mx-auto p-4 space-y-6">
         <Button
           variant="ghost"
@@ -94,7 +94,7 @@ export default function ProjectDetail() {
 
         {isLoading && <Skeleton className="h-60 w-full" />}
 
-        {!isLoading && !data?.data?.[0] && (
+        {!isLoading && !project?.data?.[0] && (
           <Card>
             <CardHeader>
               <CardTitle>Project not found.</CardTitle>
@@ -102,28 +102,28 @@ export default function ProjectDetail() {
           </Card>
         )}
 
-        {data?.data?.[0] && (
+        {project?.data?.[0] && (
           <Card>
             <CardHeader>
-              <CardTitle>{data?.data[0].title}</CardTitle>
+              <CardTitle>{project?.data[0].title}</CardTitle>
               <CardDescription>Project Details</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <p>
-                  <strong>Description:</strong> {data?.data[0].description}
+                  <strong>Description:</strong> {project?.data[0].description}
                 </p>
                 <p>
-                  <strong>Program Lead:</strong> {data?.data[0].pl}
+                  <strong>Program Lead:</strong> {project?.data[0].pl}
                 </p>
                 <div className="mt-2">
                   <p>
                     <strong>Task Counts:</strong>
                   </p>
                   <ul className="list-disc list-inside">
-                    <li>Upcoming: {data?.data[0].upcomingTasks}</li>
-                    <li>In Progress: {data?.data[0].inProgressTasks}</li>
-                    <li>Done: {data?.data[0].doneTasks}</li>
+                    <li>Upcoming: {project?.data[0].upcomingTasks}</li>
+                    <li>In Progress: {project?.data[0].inProgressTasks}</li>
+                    <li>Done: {project?.data[0].doneTasks}</li>
                   </ul>
                 </div>
                 <div className="flex space-x-2 mt-4">

@@ -11,7 +11,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -28,7 +28,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { ArrowLeft } from "lucide-react";
 import Header from "@/components/pm/Header/Header";
@@ -39,11 +39,11 @@ import { Note, Project, Task, TaskStatus } from "@/types";
 const projectSchema = z.object({
   title: z.string().min(1, "Project title is required"),
   description: z.string().optional(),
-  programLead: z.string().min(1, "Program lead is required")
+  programLead: z.string().min(1, "Program lead is required"),
 });
 
 const noteSchema = z.object({
-  text: z.string().min(1, "Note text is required")
+  text: z.string().min(1, "Note text is required"),
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
@@ -59,7 +59,7 @@ export default function ProjectDetail() {
 
   const projectForm = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
-    defaultValues: project
+    defaultValues: project,
   });
 
   const handleEditProject = (data: ProjectFormData) => {
@@ -75,9 +75,9 @@ export default function ProjectDetail() {
 
   const getTaskCounts = () => {
     const counts = {
-      Upcoming: 0,
-      "In Progress": 0,
-      Done: 0
+      upcoming: 0,
+      "in-progress": 0,
+      done: 0,
     };
     tasks.forEach((task) => {
       counts[task.status]++;
@@ -111,16 +111,16 @@ export default function ProjectDetail() {
                 <strong>Description:</strong> {project.description}
               </p>
               <p>
-                <strong>Program Lead:</strong> {project.programLead}
+                <strong>Program Lead:</strong> {project.pl}
               </p>
               <div className="mt-2">
                 <p>
                   <strong>Task Counts:</strong>
                 </p>
                 <ul className="list-disc list-inside">
-                  <li>Upcoming: {taskCounts.Upcoming}</li>
-                  <li>In Progress: {taskCounts["In Progress"]}</li>
-                  <li>Done: {taskCounts.Done}</li>
+                  <li>Upcoming: {taskCounts.upcoming}</li>
+                  <li>In Progress: {taskCounts["in-progress"]}</li>
+                  <li>Done: {taskCounts.done}</li>
                 </ul>
               </div>
               <div className="flex space-x-2 mt-4">
