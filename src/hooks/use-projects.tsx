@@ -2,10 +2,8 @@ import { fetchWithAuth } from "@/lib/utils";
 import { ApiResponse, Project } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const backendUrl1 = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL1;
 const projectsPath = process.env.NEXT_PUBLIC_PROJECTS_PATH;
-const projectPath = process.env.NEXT_PUBLIC_PROJECT_PATH;
 
 export const useGetProject = (projectId: string) => {
   return useQuery({
@@ -45,6 +43,34 @@ export const useCreateProject = () => {
             : data;
         }
       );
+    },
+  });
+};
+
+export const useEditProject = (projectId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (project: Project): Promise<ApiResponse<Project>> => {
+      return fetchWithAuth(`${backendUrl1}${projectsPath}/${projectId}`, {
+        method: "PATCH",
+        body: project,
+      });
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        ["projects"],
+        (oldData: ApiResponse<Project> | undefined) => {
+          return oldData
+            ? {
+                ...oldData,
+                data: oldData.data.map((p) =>
+                  p.id === data.data[0].id ? data.data[0] : p
+                ),
+              }
+            : data;
+        }
+      );
+      queryClient.setQueryData(["project", projectId], data);
     },
   });
 };

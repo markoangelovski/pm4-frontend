@@ -35,7 +35,7 @@ import Header from "@/components/pm/Header/Header";
 import TasksList from "@/components/pm/Tasks/TasksList";
 import { Note, Project, Task } from "@/types";
 import { projectSchema } from "@/schemas/projects.schemas";
-import { useGetProject } from "@/hooks/use-projects";
+import { useEditProject, useGetProject } from "@/hooks/use-projects";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import TaskList2 from "@/components/pm/Tasks/TaskList2";
@@ -47,19 +47,37 @@ export default function ProjectDetail() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get("projectId");
 
-  const { data: project, isLoading, error } = useGetProject(projectId || "");
+  const {
+    data: project,
+    isLoading,
+    error: projectError,
+  } = useGetProject(projectId || "");
+  const {
+    mutate: editProject,
+    isPending,
+    error: editProjectError,
+  } = useEditProject(projectId || "");
 
   const [isEditProjectOpen, setIsEditProjectOpen] = useState(false);
   const [isDeleteProjectOpen, setIsDeleteProjectOpen] = useState(false);
 
   const projectForm = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
-    defaultValues: project?.data?.[0] || {},
+    defaultValues: {}, // Initialize with an empty object
   });
 
+  useEffect(() => {
+    if (project?.data?.[0]) {
+      projectForm.reset(project.data[0]); // Set initial values for Edit Project form from the project
+    }
+  }, [project, projectForm]);
+
   const handleEditProject = (data: ProjectFormData) => {
-    // setProject({ ...project, ...data });
-    setIsEditProjectOpen(false);
+    editProject(data, {
+      onSuccess: () => {
+        setIsEditProjectOpen(false);
+      },
+    });
   };
 
   const handleDeleteProject = () => {
@@ -70,14 +88,20 @@ export default function ProjectDetail() {
 
   // Display error using toast notification
   useEffect(() => {
-    if (error || project?.hasErrors) {
+    if (projectError || editProjectError || project?.hasErrors) {
       toast({
-        title: error?.name || "Error loading projects",
-        description: error?.message || project?.message,
+        title:
+          projectError?.name ||
+          editProjectError?.name ||
+          "Error loading projects",
+        description:
+          projectError?.message ||
+          editProjectError?.message ||
+          project?.message,
         variant: "destructive",
       });
     }
-  }, [error, project]);
+  }, [project, projectError, editProjectError]);
 
   return (
     <>
@@ -201,7 +225,9 @@ export default function ProjectDetail() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit">Submit</Button>
+                  <Button type="submit" disabled={isPending}>
+                    {isPending ? "Saving..." : "Submit"}
+                  </Button>
                 </div>
               </form>
             </Form>
