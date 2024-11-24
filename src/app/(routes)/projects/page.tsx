@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -84,7 +84,7 @@ function ProjectsComponent() {
       toast({
         title: error?.name || "Error loading projects",
         description: error?.message || projectsData?.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   }, [error, projectsData]);

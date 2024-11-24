@@ -1,7 +1,7 @@
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { ApiResponse, User } from "@/types";
-import { useEffect } from "react";
+import { fetchWithAuth } from "@/lib/utils";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL1;
 const loginPath = process.env.NEXT_PUBLIC_USER_LOGIN_PATH;
@@ -48,21 +48,23 @@ export const useAuth = () => {
   return useQuery({
     queryKey: ["auth"],
     queryFn: (): Promise<ApiResponse<User[]>> => {
-      const access = window.sessionStorage.getItem("access");
-      const accessParsed = access ? JSON.parse(access) : null;
-      if (!accessParsed)
-        return Promise.resolve({
-          hasErrors: true,
-          statusCode: 401,
-          message: "Unauthorized",
-          data: [],
-        });
+      // const access = window.sessionStorage.getItem("access");
+      // const accessParsed = access ? JSON.parse(access) : null;
+      // if (!accessParsed)
+      //   return Promise.resolve({
+      //     hasErrors: true,
+      //     statusCode: 401,
+      //     message: "Unauthorized",
+      //     data: [],
+      //   });
 
-      return fetch(`${backendUrl}${authPath}`, {
-        headers: {
-          Authorization: `Bearer ${accessParsed.secret}`,
-        },
-      }).then((res) => res.json());
+      return fetchWithAuth(`${backendUrl}${authPath}`);
+
+      // return fetch(`${backendUrl}${authPath}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${accessParsed.secret}`,
+      //   },
+      // }).then((res) => res.json());
     },
   });
 };
