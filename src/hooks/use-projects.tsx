@@ -74,3 +74,28 @@ export const useEditProject = (projectId: string) => {
     },
   });
 };
+
+export const useDeleteProject = (projectId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (): Promise<ApiResponse<Project>> => {
+      return fetchWithAuth(`${backendUrl1}${projectsPath}/${projectId}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(
+        ["projects"],
+        (oldData: ApiResponse<Project> | undefined) => {
+          return oldData
+            ? {
+                ...oldData,
+                data: oldData.data.filter((p) => p.id !== projectId),
+              }
+            : oldData;
+        }
+      );
+      queryClient.removeQueries({ queryKey: ["project", projectId] });
+    },
+  });
+};

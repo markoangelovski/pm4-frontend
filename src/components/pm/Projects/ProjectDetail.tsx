@@ -35,7 +35,11 @@ import Header from "@/components/pm/Header/Header";
 import TasksList from "@/components/pm/Tasks/TasksList";
 import { Note, Project, Task } from "@/types";
 import { projectSchema } from "@/schemas/projects.schemas";
-import { useEditProject, useGetProject } from "@/hooks/use-projects";
+import {
+  useGetProject,
+  useEditProject,
+  useDeleteProject,
+} from "@/hooks/use-projects";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import TaskList2 from "@/components/pm/Tasks/TaskList2";
@@ -52,11 +56,18 @@ export default function ProjectDetail() {
     isLoading,
     error: projectError,
   } = useGetProject(projectId || "");
+
   const {
     mutate: editProject,
-    isPending,
+    isPending: isEditPending,
     error: editProjectError,
   } = useEditProject(projectId || "");
+
+  const {
+    mutate: deleteProject,
+    isPending: isDeletePending,
+    error: deleteProjectError,
+  } = useDeleteProject(projectId || "");
 
   const [isEditProjectOpen, setIsEditProjectOpen] = useState(false);
   const [isDeleteProjectOpen, setIsDeleteProjectOpen] = useState(false);
@@ -81,9 +92,8 @@ export default function ProjectDetail() {
   };
 
   const handleDeleteProject = () => {
-    // In a real application, you would delete the project here
-    alert("Project deleted");
-    setIsDeleteProjectOpen(false);
+    deleteProject();
+    router.push("/projects");
   };
 
   // Display error using toast notification
@@ -93,15 +103,17 @@ export default function ProjectDetail() {
         title:
           projectError?.name ||
           editProjectError?.name ||
+          deleteProjectError?.name ||
           "Error loading projects",
         description:
           projectError?.message ||
           editProjectError?.message ||
+          deleteProjectError?.message ||
           project?.message,
         variant: "destructive",
       });
     }
-  }, [project, projectError, editProjectError]);
+  }, [project, projectError, editProjectError, deleteProjectError]);
 
   return (
     <>
@@ -225,8 +237,8 @@ export default function ProjectDetail() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? "Saving..." : "Submit"}
+                  <Button type="submit" disabled={isEditPending}>
+                    {isEditPending ? "Saving..." : "Submit"}
                   </Button>
                 </div>
               </form>
@@ -253,8 +265,12 @@ export default function ProjectDetail() {
               >
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={handleDeleteProject}>
-                Delete
+              <Button
+                variant="destructive"
+                disabled={isDeletePending}
+                onClick={handleDeleteProject}
+              >
+                {isDeletePending ? "Deleting..." : "Delete"}
               </Button>
             </DialogFooter>
           </DialogContent>
