@@ -24,11 +24,21 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  NEXT_PUBLIC_BACKEND_ROOT_URL1: ${{ vars.NEXT_PUBLIC_BACKEND_ROOT_URL1 }}
+  NEXT_PUBLIC_USER_LOGIN_PATH: ${{ vars.NEXT_PUBLIC_USER_LOGIN_PATH }}
+  NEXT_PUBLIC_USER_AUTH_PATH: ${{ vars.NEXT_PUBLIC_USER_AUTH_PATH }}
+  NEXT_PUBLIC_PROJECTS_PATH: ${{ vars.NEXT_PUBLIC_PROJECTS_PATH }}
+  NEXT_PUBLIC_TASKS_PATH: ${{ vars.NEXT_PUBLIC_TASKS_PATH }}
+
 jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: "Check env variables"
+        run: echo "Root url $NEXT_PUBLIC_BACKEND_ROOT_URL1!"
+
       - name: Checkout
         uses: actions/checkout@v4
       - name: Detect package manager
@@ -74,13 +84,7 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
-        run: echo "NEXT_PUBLIC_BACKEND_ROOT_URL1 $NEXT_PUBLIC_BACKEND_ROOT_URL1" && ${{ steps.detect-package-manager.outputs.runner }} next build
-        env:
-          NEXT_PUBLIC_BACKEND_ROOT_URL1: ${{ vars.NEXT_PUBLIC_BACKEND_ROOT_URL1 }}
-          NEXT_PUBLIC_USER_LOGIN_PATH: ${{ vars.NEXT_PUBLIC_USER_LOGIN_PATH }}
-          NEXT_PUBLIC_USER_AUTH_PATH: ${{ vars.NEXT_PUBLIC_USER_AUTH_PATH }}
-          NEXT_PUBLIC_PROJECTS_PATH: ${{ vars.NEXT_PUBLIC_PROJECTS_PATH }}
-          NEXT_PUBLIC_TASKS_PATH: ${{ vars.NEXT_PUBLIC_TASKS_PATH }}
+        run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
