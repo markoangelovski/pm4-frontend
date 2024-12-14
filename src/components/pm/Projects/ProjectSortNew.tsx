@@ -32,7 +32,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { CardDescription, CardHeader } from "@/components/ui/card";
 import { Project } from "@/types";
-import { projectSchema } from "@/schemas/projects.schemas";
+import { projectSchema } from "@/schemas";
 import { useCreateProject, useGetProjects } from "@/hooks/use-projects";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useUpdateQueryParam } from "@/hooks/use-helpers";

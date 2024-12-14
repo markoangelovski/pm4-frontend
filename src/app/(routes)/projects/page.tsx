@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -97,7 +97,7 @@ function ProjectsComponent() {
     }
   }, [error, projectsData]);
 
-  const projectId = new URLSearchParams(searchParams).get("projectId");
+  const projectId = searchParams.get("projectId");
 
   if (projectId) return <ProjectDetail />;
 
@@ -150,11 +150,7 @@ function ProjectsComponent() {
 }
 
 export default function Projects() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProjectsComponent />
-    </Suspense>
-  );
+  return <ProjectsComponent />;
 }
 
 function Row({ project, link }: { project: Project; link: () => void }) {

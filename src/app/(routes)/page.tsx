@@ -7,7 +7,7 @@ import {
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
-  isWeekend
+  isWeekend,
 } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
@@ -35,7 +35,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  ComposedChart
+  ComposedChart,
 } from "recharts";
 import Header from "@/components/pm/Header/Header";
 
@@ -59,7 +59,7 @@ const fetchDailyData = async (
     )
       .toString()
       .padStart(2, "0")}`,
-    hoursWorked: 5 + Math.random() * 5
+    hoursWorked: 5 + Math.random() * 5,
   }));
 };
 
@@ -72,7 +72,7 @@ const formatHours = (hours: number) => {
 export default function Home() {
   const [dateRange, setDateRange] = useState<DateRange>({
     from: startOfMonth(new Date()),
-    to: endOfMonth(new Date())
+    to: endOfMonth(new Date()),
   });
   const [hoursWorked, setHoursWorked] = useState(0);
   const [hoursBooked, setHoursBooked] = useState(0);
@@ -95,7 +95,7 @@ export default function Home() {
             fetchHoursBooked(dateRange.from, dateRange.to),
             fetchMissingHours(dateRange.from, dateRange.to),
             fetchOvertime(dateRange.from, dateRange.to),
-            fetchDailyData(dateRange.from, dateRange.to)
+            fetchDailyData(dateRange.from, dateRange.to),
           ]);
           setHoursWorked(worked);
           setHoursBooked(booked);
@@ -131,7 +131,7 @@ export default function Home() {
                 <Pie
                   data={[
                     { name: title, value: value },
-                    { name: "Remaining", value: Math.max(0, total - value) }
+                    { name: "Remaining", value: Math.max(0, total - value) },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -196,7 +196,7 @@ export default function Home() {
                   setDateRange(
                     newDateRange || {
                       from: startOfMonth(new Date()),
-                      to: endOfMonth(new Date())
+                      to: endOfMonth(new Date()),
                     }
                   )
                 }
@@ -229,8 +229,8 @@ export default function Home() {
                             {
                               name: "Hours",
                               missing: missingHours,
-                              overtime: overtime
-                            }
+                              overtime: overtime,
+                            },
                           ]}
                         >
                           <CartesianGrid strokeDasharray="3 3" />

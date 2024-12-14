@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import TanstackProvider from "@/providers/TanstackProvider";
 import AuthProvider from "@/providers/AuthProvider";
+import { Suspense } from "react";
 
 const queryClient = new QueryClient();
 
@@ -38,14 +39,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TanstackProvider>
-          <AuthProvider>
-            <SidebarProvider>
-              <SidebarLeft />
-              <SidebarInset>{children}</SidebarInset>
-              <SidebarRight />
-            </SidebarProvider>
-            <Toaster />
-          </AuthProvider>
+          <Suspense fallback={<div>Suspending...</div>}>
+            <AuthProvider>
+              <SidebarProvider>
+                <SidebarLeft />
+                <SidebarInset>{children}</SidebarInset>
+                <SidebarRight />
+              </SidebarProvider>
+              <Toaster />
+            </AuthProvider>
+          </Suspense>
         </TanstackProvider>
       </body>
     </html>

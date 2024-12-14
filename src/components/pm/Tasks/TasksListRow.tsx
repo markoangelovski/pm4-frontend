@@ -1,5 +1,4 @@
 import { useState, useEffect, Fragment } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,7 +8,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import {
   Table,
@@ -17,7 +16,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,7 +24,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
@@ -33,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -41,14 +40,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -64,7 +63,7 @@ import {
   List,
   Link as LinkIcon,
   ArrowLeft,
-  CalendarIcon
+  CalendarIcon,
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -72,7 +71,7 @@ import {
   formatDistanceToNow,
   isFuture,
   isPast,
-  parseISO
+  parseISO,
 } from "date-fns";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -81,7 +80,7 @@ import NextLink from "next/link";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 // import { mockNotes } from "@/mocks";
@@ -95,18 +94,20 @@ const taskSchema = z.object({
   pl: z.string().min(1, "Program lead is required"),
   jiraLink: z.string().url("Invalid Jira link"),
   dueDate: z.date(),
-  status: z.enum(["Upcoming", "In Progress", "Done"])
+  status: z.enum(["Upcoming", "In Progress", "Done"]),
 });
 
 const noteSchema = z.object({
-  content: z.string().min(1, "Note text is required")
+  content: z.string().min(1, "Note text is required"),
 });
 
 type TaskFormData = z.infer<typeof taskSchema>;
 type NoteFormData = z.infer<typeof noteSchema>;
 
 const TasksListRow = ({ task }: { task: Task }) => {
-  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+  const [expandedTaskId, setExpandedTaskId] = useState<
+    string | null | undefined
+  >(null);
   const [newNoteTaskId, setNewNoteTaskId] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isMarkCompletedOpen, setIsMarkCompletedOpen] = useState(false);
@@ -145,25 +146,25 @@ const TasksListRow = ({ task }: { task: Task }) => {
     const taskNotes = task?.notes?.filter((note) => note.taskId === taskId);
     return taskNotes?.sort(
       (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime()
     )[0];
   };
 
   const noteForm = useForm<NoteFormData>({
     resolver: zodResolver(noteSchema),
     defaultValues: {
-      content: ""
-    }
+      content: "",
+    },
   });
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       Link.configure({
-        openOnClick: false
-      })
+        openOnClick: false,
+      }),
     ],
-    content: ""
+    content: "",
   });
 
   const handleEditNote = (data: NoteFormData) => {
@@ -173,7 +174,7 @@ const TasksListRow = ({ task }: { task: Task }) => {
           ? {
               ...note,
               text: data.content,
-              updatedAt: new Date()
+              modifiedAt: new Date(),
             }
           : note
       );
@@ -191,7 +192,7 @@ const TasksListRow = ({ task }: { task: Task }) => {
         taskId: newNoteTaskId,
         content: data.content,
         createdAt: new Date(),
-        updatedAt: new Date()
+        modifiedAt: new Date(),
       };
       // setNotes([...notes, newNote]);
       setNewNoteTaskId(null);
@@ -205,7 +206,7 @@ const TasksListRow = ({ task }: { task: Task }) => {
       const updatedTask: Task = {
         ...selectedTask,
         status: "done",
-        updatedAt: new Date()
+        modifiedAt: new Date(),
       };
       // setTasks(
       //   tasks.map((task) => (task.id === selectedTask.id ? updatedTask : task))
@@ -252,20 +253,22 @@ const TasksListRow = ({ task }: { task: Task }) => {
             </span>
           </div>
         </TableCell>
-        <TableCell>{format(task.createdAt, "dd.MM.yy")}</TableCell>
-        <TableCell>{format(task.updatedAt, "dd.MM.yy")}</TableCell>
+        <TableCell>{format(task.createdAt || "", "dd.MM.yy")}</TableCell>
+        <TableCell>{format(task.modifiedAt || "", "dd.MM.yy")}</TableCell>
         <TableCell>{task.status}</TableCell>
         <TableCell>
           <div className="flex space-x-2">
             <button
-              onClick={() => openExternalLink(task.jiraLink)}
+              onClick={() => openExternalLink(task.jiraLink || "")}
               className="text-gray-500 hover:text-gray-700"
               title="Open Jira Link"
             >
               <ExternalLink className="w-5 h-5" />
             </button>
             <button
-              onClick={() => setNewNoteTaskId(task.id)}
+              onClick={() =>
+                setNewNoteTaskId(task ? (task.id ? task.id : null) : null)
+              }
               className="text-gray-500 hover:text-gray-700"
               title="Add Note"
             >
@@ -286,10 +289,10 @@ const TasksListRow = ({ task }: { task: Task }) => {
       </TableRow>
       <TableRow>
         <TableCell colSpan={7}>
-          {getLatestNote(task.id) && (
+          {getLatestNote(task.id || "") && (
             <div className="p-2 bg-gray-50 rounded">
               <p className="text-sm text-gray-600">
-                {getLatestNote(task.id)?.content}
+                {getLatestNote(task.id || "")?.content}
               </p>
             </div>
           )}
@@ -315,7 +318,7 @@ const TasksListRow = ({ task }: { task: Task }) => {
                         <div
                           className="prose prose-sm"
                           dangerouslySetInnerHTML={{
-                            __html: note.content
+                            __html: note.content,
                           }}
                         />
                         <div className="flex space-x-2">

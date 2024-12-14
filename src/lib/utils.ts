@@ -39,12 +39,12 @@ export async function fetchWithAuth<T>(
       Authorization: `Bearer ${parsedAccess.secret}`,
     },
   };
-
+  console.log("body", body);
   if (method === "POST" || method === "PATCH") {
     payload.headers["Content-Type"] = "application/json";
     payload.body = JSON.stringify(body);
   }
-
+  console.log("payload", payload);
   const res = await fetch(url, payload);
 
   if (!res.ok) {

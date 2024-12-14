@@ -9,7 +9,7 @@ import {
   Edit,
   Trash2,
   Plus,
-  ListChecks
+  ListChecks,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,12 +21,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger
+  CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
   Table,
@@ -34,7 +34,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
@@ -45,26 +45,26 @@ import { v4 as uuidv4 } from "uuid";
 
 import Header from "@/components/pm/Header/Header";
 import { days, tasks } from "@/mocks";
-import { Log, PmEvent } from "@/types";
+import { Log, PmEvent, UUID } from "@/types";
 
 const eventSchema = z.object({
   title: z.string().min(1, "Title is required"),
   taskId: z.string().optional(),
   taskTitle: z.string().optional(),
   logTitle: z.string().optional(),
-  logDuration: z.number().min(0).optional()
+  logDuration: z.number().min(0).optional(),
 });
 
 const logSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  duration: z.number().min(0).default(0)
+  duration: z.number().min(0).default(0),
 });
 
 export default function Events() {
   const [events, setEvents] = useState<PmEvent[]>(
     days.map((d) => d.events).flat()
   );
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [editingEvent, setEditingEvent] = useState<PmEvent | null>(null);
   const [editingLog, setEditingLog] = useState<{
     eventId: string;
     log: Log;
@@ -80,26 +80,29 @@ export default function Events() {
   const [filteredTasks, setFilteredTasks] = useState<typeof tasks>([]);
 
   const handleAddEvent = useCallback((data: z.infer<typeof eventSchema>) => {
-    const newId = Math.random().toString(36).substr(2, 9);
     const newEvent: PmEvent = {
-      ...data,
       id: uuidv4(),
       createdAt: new Date(),
+      title: data.title,
+      taskId: data.taskId || "",
+      taskTitle: data.taskTitle || "",
       duration: data.logDuration || 0,
       logs: [],
-      totalBooked: 0
+      totalBooked: 0,
     };
 
     if (data.logTitle) {
-      const logId = Math.random().toString(36).substr(2, 9);
       newEvent.logs.push({
-        id: logId,
-        title: data.logTitle,
-        duration: data.logDuration || 0
+        id: uuidv4(),
+        createdAt: new Date(),
+        modifiedAt: new Date(),
+        eventId: newEvent.id,
+        description: data.logTitle,
+        duration: data.logDuration || 0,
       });
     }
 
-    // setEvents((prev) => [...prev, newEvent]);
+    setEvents((prev) => [...prev, newEvent]);
   }, []);
 
   const handleUpdateEvent = useCallback(
@@ -121,15 +124,24 @@ export default function Events() {
 
   const handleAddLog = useCallback(
     (eventId: string, data: z.infer<typeof logSchema>) => {
-      const newId = Math.random().toString(36).substr(2, 9);
       setEvents((prev) =>
         prev.map((e) => {
           if (e.id === eventId) {
-            const newLogs = [...e.logs, { id: newId, ...data }];
+            const newLogs = [
+              ...e.logs,
+              {
+                id: uuidv4(),
+                ...data,
+                createdAt: new Date(),
+                modifiedAt: new Date(),
+                eventId: e.id,
+                description: data.title,
+              },
+            ];
             return {
               ...e,
               logs: newLogs,
-              duration: newLogs.reduce((sum, l) => sum + l.duration, 0)
+              duration: newLogs.reduce((sum, l) => sum + l.duration, 0),
             };
           }
           return e;
@@ -147,12 +159,14 @@ export default function Events() {
           prev.map((e) => {
             if (e.id === editingLog.eventId) {
               const newLogs = e.logs.map((l) =>
-                l.id === editingLog.log.id ? { ...l, ...data } : l
+                l.id === editingLog.log.id
+                  ? { ...l, ...data, modifiedAt: new Date() }
+                  : l
               );
               return {
                 ...e,
                 logs: newLogs,
-                duration: newLogs.reduce((sum, l) => sum + l.duration, 0)
+                duration: newLogs.reduce((sum, l) => sum + l.duration, 0),
               };
             }
             return e;
@@ -172,7 +186,7 @@ export default function Events() {
           return {
             ...e,
             logs: newLogs,
-            duration: newLogs.reduce((sum, l) => sum + l.duration, 0)
+            duration: newLogs.reduce((sum, l) => sum + l.duration, 0),
           };
         }
         return e;
@@ -235,7 +249,7 @@ export default function Events() {
                 <Pie
                   data={[
                     { name: "Value", value: value },
-                    { name: "Remaining", value: remainingTime }
+                    { name: "Remaining", value: remainingTime },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -259,10 +273,10 @@ export default function Events() {
 
   const EventForm = ({
     onSubmit,
-    initialData
+    initialData,
   }: {
     onSubmit: (data: z.infer<typeof eventSchema>) => void;
-    initialData?: Partial<Event>;
+    initialData?: Partial<PmEvent>;
   }) => {
     const {
       register,
@@ -270,10 +284,10 @@ export default function Events() {
       control,
       watch,
       setValue,
-      formState: { errors }
+      formState: { errors },
     } = useForm<z.infer<typeof eventSchema>>({
       resolver: zodResolver(eventSchema),
-      defaultValues: initialData || {}
+      defaultValues: initialData || {},
     });
 
     const watchTaskTitle = watch("taskTitle");
@@ -306,7 +320,7 @@ export default function Events() {
                     field.onChange(e);
                     setTaskSearch(e.target.value);
                     setFilteredTasks(
-                      mockTasks.filter((task) =>
+                      tasks.filter((task) =>
                         task.title
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase())
@@ -321,7 +335,7 @@ export default function Events() {
               <select
                 className="mt-2 w-full border rounded"
                 onChange={(e) => {
-                  const selectedTask = mockTasks.find(
+                  const selectedTask = tasks.find(
                     (task) => task.id === e.target.value
                   );
                   if (selectedTask) {
@@ -391,7 +405,7 @@ export default function Events() {
   const LogForm = ({
     onSubmit,
     onCancel,
-    initialData
+    initialData,
   }: {
     onSubmit: (data: z.infer<typeof logSchema>) => void;
     onCancel: () => void;
@@ -401,10 +415,10 @@ export default function Events() {
       register,
       handleSubmit,
       control,
-      formState: { errors }
+      formState: { errors },
     } = useForm<z.infer<typeof logSchema>>({
       resolver: zodResolver(logSchema),
-      defaultValues: initialData || { duration: 0 }
+      defaultValues: initialData || { duration: 0 },
     });
 
     return (
@@ -498,7 +512,7 @@ export default function Events() {
                     {event.taskTitle}
                   </Link>
                   <span>-</span>
-                  <span>{format(event.creationDate, "MMM d, yyyy")}</span>
+                  <span>{format(event.createdAt, "MMM d, yyyy")}</span>
                 </div>
                 <p className="text-sm text-gray-500 mt-1">
                   Total worked: {formatDuration(event.duration)}
@@ -542,7 +556,7 @@ export default function Events() {
                     setDeleteConfirm({
                       type: "event",
                       id: event.id,
-                      title: event.title
+                      title: event.title,
                     })
                   }
                 >
@@ -571,7 +585,7 @@ export default function Events() {
                 <TableBody>
                   {event.logs.map((log) => (
                     <TableRow key={log.id}>
-                      <TableCell>{log.title}</TableCell>
+                      <TableCell>{log.description}</TableCell>
                       <TableCell>{formatDuration(log.duration)}</TableCell>
                       <TableCell className="text-right">
                         <Button
@@ -590,7 +604,7 @@ export default function Events() {
                             setDeleteConfirm({
                               type: "log",
                               id: log.id,
-                              title: log.title
+                              title: log.description,
                             })
                           }
                         >

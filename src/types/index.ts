@@ -17,7 +17,7 @@ export type User = {
   username: string;
   password: string;
   createdAt?: Date;
-  updatedAt?: Date;
+  modifiedAt?: Date;
   emailMd5?: string;
   projects?: Project[];
 };
@@ -36,15 +36,15 @@ export type Project = {
 };
 
 export type Task = {
-  id: UUID;
-  projectId: UUID;
+  id?: UUID;
+  projectId?: UUID;
   title: string;
   description?: string;
-  pl: string;
-  createdAt: Date;
-  updatedAt: Date;
+  pl?: string;
+  createdAt?: Date;
+  modifiedAt?: Date;
   status: TaskStatus;
-  jiraLink: string;
+  jiraLink?: string;
   dueDate: Date;
   notes?: Note[];
 };
@@ -54,12 +54,13 @@ export type Note = {
   taskId: UUID;
   content: string;
   createdAt: Date;
-  updatedAt: Date;
+  modifiedAt: Date;
 };
 
 export type Day = {
+  id: UUID;
   createdAt: Date;
-  updatedAt: Date;
+  modifiedAt: Date;
   startOfWork: number;
   workedHours: number;
   bookedHours: number;
@@ -72,19 +73,23 @@ export type Day = {
 export type PmEvent = {
   id: UUID;
   createdAt: Date;
-  updatedAt: Date;
+  modifiedAt?: Date;
   title: string;
-  workedHours: number;
-  bookedHours: number;
-  externalBooking: number;
-  taskId: UUID;
+  workedHours?: number;
+  bookedHours?: number;
+  externalBooking?: number;
+  taskId?: UUID;
+  taskTitle?: string;
   logs: Log[];
-  bookings: Booking[];
+  bookings?: Booking[];
+  duration: number;
+  totalBooked: number;
 };
 
 export type Log = {
+  id: UUID;
   createdAt: Date;
-  updatedAt: Date;
+  modifiedAt: Date;
   eventId: UUID;
   description: string;
   duration: number;
@@ -92,7 +97,7 @@ export type Log = {
 
 export type Booking = {
   createdAt: Date;
-  updatedAt: Date;
+  modifiedAt: Date;
   amount: number;
   bookedDate: Date;
 };

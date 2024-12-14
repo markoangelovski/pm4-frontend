@@ -32,9 +32,9 @@ import {
 } from "@/components/ui/form";
 import { ArrowLeft } from "lucide-react";
 import Header from "@/components/pm/Header/Header";
-import TasksList from "@/components/pm/Tasks/TasksList";
+
 import { Note, Project, Task } from "@/types";
-import { projectSchema } from "@/schemas/projects.schemas";
+import { projectSchema } from "@/schemas";
 import {
   useGetProject,
   useEditProject,

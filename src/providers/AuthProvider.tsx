@@ -8,6 +8,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // const searchParams = window.location.search;
   const pathname = usePathname();
 
   const { isLoading, isError, data, error } = useAuth();
@@ -16,7 +17,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Handle errors with API call
   if (isError && pathname !== "/login") {
-    let redirectUrl = `/login?cb=${encodeURIComponent(
+    const redirectUrl = `/login?cb=${encodeURIComponent(
       `${pathname}?${searchParams}`
     )}&error=${encodeURIComponent(
       error?.message || data?.message || "An error ocurred!"

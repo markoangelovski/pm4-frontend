@@ -9,7 +9,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
@@ -17,7 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
@@ -58,12 +58,12 @@ const sampleData: Event[] = [
     logs: [
       { title: "Preparation", duration: 30 },
       { title: "Meeting", duration: 90 },
-      { title: "Follow-up", duration: 30 }
+      { title: "Follow-up", duration: 30 },
     ],
     bookings: [
       { amount: 2, bookedTo: new Date("2023-07-10") },
-      { amount: 1, bookedTo: new Date("2023-07-11") }
-    ]
+      { amount: 1, bookedTo: new Date("2023-07-11") },
+    ],
   },
   {
     title: "Code Review",
@@ -74,12 +74,12 @@ const sampleData: Event[] = [
     externalBooking: 2,
     logs: [
       { title: "Review PRs", duration: 120 },
-      { title: "Feedback Session", duration: 60 }
+      { title: "Feedback Session", duration: 60 },
     ],
     bookings: [
       { amount: 3, bookedTo: new Date("2023-07-10") },
-      { amount: 2, bookedTo: new Date("2023-07-12") }
-    ]
+      { amount: 2, bookedTo: new Date("2023-07-12") },
+    ],
   },
   {
     title: "Bug Fixing",
@@ -91,12 +91,12 @@ const sampleData: Event[] = [
     logs: [
       { title: "Investigate Issues", duration: 90 },
       { title: "Fix Bugs", duration: 120 },
-      { title: "Testing", duration: 60 }
+      { title: "Testing", duration: 60 },
     ],
     bookings: [
       { amount: 4, bookedTo: new Date("2023-07-11") },
-      { amount: 3, bookedTo: new Date("2023-07-13") }
-    ]
+      { amount: 3, bookedTo: new Date("2023-07-13") },
+    ],
   },
   {
     title: "Team Sync",
@@ -107,9 +107,9 @@ const sampleData: Event[] = [
     externalBooking: 0,
     logs: [
       { title: "Status Update", duration: 30 },
-      { title: "Planning", duration: 30 }
+      { title: "Planning", duration: 30 },
     ],
-    bookings: [{ amount: 1, bookedTo: new Date("2023-07-11") }]
+    bookings: [{ amount: 1, bookedTo: new Date("2023-07-11") }],
   },
   {
     title: "Feature Development",
@@ -121,13 +121,13 @@ const sampleData: Event[] = [
     logs: [
       { title: "Planning", duration: 60 },
       { title: "Coding", duration: 240 },
-      { title: "Unit Testing", duration: 90 }
+      { title: "Unit Testing", duration: 90 },
     ],
     bookings: [
       { amount: 6, bookedTo: new Date("2023-07-12") },
-      { amount: 4, bookedTo: new Date("2023-07-14") }
-    ]
-  }
+      { amount: 4, bookedTo: new Date("2023-07-14") },
+    ],
+  },
 ];
 
 // Helper functions
@@ -244,8 +244,8 @@ export default function Stats() {
               {
                 name: "Remaining",
                 value: Math.max(7.5 - totalHoursWorked, 0),
-                color: "#E0E0E0"
-              }
+                color: "#E0E0E0",
+              },
             ];
 
             return (
@@ -300,13 +300,13 @@ export default function Stats() {
                                 {
                                   name: "Booked",
                                   value: totalHoursBooked,
-                                  color: "#2196F3"
+                                  color: "#2196F3",
                                 },
                                 {
                                   name: "Remaining",
                                   value: Math.max(7.5 - totalHoursBooked, 0),
-                                  color: "#E0E0E0"
-                                }
+                                  color: "#E0E0E0",
+                                },
                               ]}
                               dataKey="value"
                               nameKey="name"
@@ -345,7 +345,7 @@ export default function Stats() {
                                 {
                                   name: "External",
                                   value: totalExternalBookings,
-                                  color: "#FFC107"
+                                  color: "#FFC107",
                                 },
                                 {
                                   name: "Remaining",
@@ -353,8 +353,8 @@ export default function Stats() {
                                     7.5 - totalExternalBookings,
                                     0
                                   ),
-                                  color: "#E0E0E0"
-                                }
+                                  color: "#E0E0E0",
+                                },
                               ]}
                               dataKey="value"
                               nameKey="name"
@@ -393,13 +393,13 @@ export default function Stats() {
                                 {
                                   name: "Overtime",
                                   value: overtime,
-                                  color: "#F44336"
+                                  color: "#F44336",
                                 },
                                 {
                                   name: "Regular",
                                   value: Math.min(7.5, totalHoursWorked),
-                                  color: "#E0E0E0"
-                                }
+                                  color: "#E0E0E0",
+                                },
                               ]}
                               dataKey="value"
                               nameKey="name"
@@ -430,7 +430,7 @@ export default function Stats() {
                       {new Date(date).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "2-digit",
-                        year: "2-digit"
+                        year: "2-digit",
                       })}
                     </CardTitle>
                   </CardHeader>
@@ -505,7 +505,7 @@ export default function Stats() {
                                         {
                                           day: "2-digit",
                                           month: "2-digit",
-                                          year: "2-digit"
+                                          year: "2-digit",
                                         }
                                       )}
                                     </div>
@@ -581,7 +581,7 @@ export default function Stats() {
 }
 
 function BookingForm({
-  onBook
+  onBook,
 }: {
   onBook: (amount: number, date: Date) => void;
 }) {
