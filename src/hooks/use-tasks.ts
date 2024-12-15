@@ -1,24 +1,10 @@
-import {
-  ApiResponse,
-  Project,
-  Task,
-  TaskStatus,
-  UUID,
-  Note,
-  Day,
-  PmEvent,
-  Log,
-  Booking,
-} from "@/types";
+import { ApiResponse, Task } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "@/lib/utils";
-import { taskSchema } from "@/schemas";
-import { TaskFormData } from "@/components/pm/Tasks/TaskSortNew/NewTaskBtn";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const backendUrl1 = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL1;
 const tasksPath = process.env.NEXT_PUBLIC_TASKS_PATH;
-const taskPath = process.env.NEXT_PUBLIC_TASK_PATH;
+const tasksSearchPath = process.env.NEXT_PUBLIC_TASKS_SEARCH_PATH;
 
 export const useGetTask = (taskId: string) => {
   return useQuery({
@@ -113,5 +99,17 @@ export const useDeleteTask = (taskId: string) => {
       );
       queryClient.removeQueries({ queryKey: ["task", taskId] });
     },
+  });
+};
+
+// Search Tasks field used in creating a new PmEvent
+export const useSearchTasks = (q: string) => {
+  const url = new URL(`${backendUrl1}${tasksSearchPath}`);
+  url.searchParams.append("q", q);
+
+  return useQuery({
+    enabled: q.length > 2,
+    queryKey: ["tasks", q],
+    queryFn: (): Promise<ApiResponse<Task>> => fetchWithAuth(url.toString()),
   });
 };

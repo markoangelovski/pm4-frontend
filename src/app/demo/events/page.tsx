@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { format } from "date-fns";
 import Link from "next/link";
 import {
@@ -45,27 +45,14 @@ import { v4 as uuidv4 } from "uuid";
 
 import Header from "@/components/pm/Header/Header";
 import { days, tasks } from "@/mocks";
-import { Log, PmEvent, Task, UUID } from "@/types";
-import { useSearchParams } from "next/navigation";
-import { useUpdateQueryParam } from "@/hooks/use-helpers";
-import { useCreateEvent, useGetEvents } from "@/hooks/use-events";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSearchTasks } from "@/hooks/use-tasks";
-import SearchTasks from "@/components/pm/Events/SearchTasks";
+import { Log, PmEvent, UUID } from "@/types";
 
 const eventSchema = z.object({
   title: z.string().min(1, "Title is required"),
   taskId: z.string().optional(),
+  taskTitle: z.string().optional(),
   logTitle: z.string().optional(),
-  duration: z.coerce.number().min(0).default(0),
+  logDuration: z.number().min(0).optional(),
 });
 
 const logSchema = z.object({
@@ -91,58 +78,36 @@ export default function Events() {
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
   const [taskSearch, setTaskSearch] = useState("");
   const [filteredTasks, setFilteredTasks] = useState<typeof tasks>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  // const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
-  const searchParams = useSearchParams();
-
-  const day = searchParams.get("day");
-
-  const updateQueryParam = useUpdateQueryParam();
-
-  const today = format(new Date(), "yyyy-MM-dd");
-
-  useEffect(() => {
-    if (!day) {
-      updateQueryParam("day", today);
-    }
-  }, [day]);
-
-  const {
-    data: eventsData,
-    isLoading: isEventsLoading,
-    error: eventsError,
-  } = useGetEvents();
-
-  const {
-    mutate: createEvent,
-    isPending,
-    error: createEventError,
-  } = useCreateEvent();
 
   const handleAddEvent = useCallback((data: z.infer<typeof eventSchema>) => {
     const newEvent: PmEvent = {
       id: uuidv4(),
-      title: data.title,
-      task: data.taskId
-        ? {
-            id: data.taskId,
-            title: "",
-            status: "in-progress",
-            dueDate: new Date(),
-          }
-        : undefined,
-      logs: [],
-      duration: data.duration,
-      totalBooked: 0,
       createdAt: new Date(),
+      title: data.title,
+      taskId: data.taskId || "",
+      taskTitle: data.taskTitle || "",
+      duration: data.logDuration || 0,
+      logs: [],
+      totalBooked: 0,
     };
-    createEvent(newEvent);
+
+    if (data.logTitle) {
+      newEvent.logs.push({
+        id: uuidv4(),
+        title: data.logTitle,
+        createdAt: new Date(),
+        modifiedAt: new Date(),
+        eventId: newEvent.id,
+        // description: data.logTitle,
+        duration: data.logDuration || 0,
+      });
+    }
+
+    setEvents((prev) => [...prev, newEvent]);
   }, []);
 
   const handleUpdateEvent = useCallback(
     (data: z.infer<typeof eventSchema>) => {
-      console.log("data: ", data);
       if (editingEvent) {
         setEvents((prev) =>
           prev.map((e) => (e.id === editingEvent.id ? { ...e, ...data } : e))
@@ -314,86 +279,127 @@ export default function Events() {
     onSubmit: (data: z.infer<typeof eventSchema>) => void;
     initialData?: Partial<PmEvent>;
   }) => {
-    const pmEventForm = useForm<z.infer<typeof eventSchema>>({
+    const {
+      register,
+      handleSubmit,
+      control,
+      watch,
+      setValue,
+      formState: { errors },
+    } = useForm<z.infer<typeof eventSchema>>({
       resolver: zodResolver(eventSchema),
-      defaultValues: {
-        title: initialData?.title || "",
-        logTitle: initialData?.logTitle || "",
-        duration: initialData?.duration || 0,
-        taskId: initialData?.task?.id || "",
-      },
+      defaultValues: initialData || {},
     });
 
-    const handleTaskClick = (task: Task) => {
-      pmEventForm.setValue("taskId", task.id);
-    };
-
-    console.log("pmeventform", pmEventForm.formState);
+    const watchTaskTitle = watch("taskTitle");
 
     return (
-      <Form {...pmEventForm}>
-        <form
-          onSubmit={pmEventForm.handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
-          <FormField
-            control={pmEventForm.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="title" className="text-right">
+            Title
+          </Label>
+          <div className="col-span-3">
+            <Input id="title" {...register("title")} />
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title.message}</p>
             )}
-          />
-
-          <SearchTasks
-            initialData={initialData}
-            pmEventForm={pmEventForm}
-            handleTaskClick={handleTaskClick}
-          />
-
-          {!initialData && (
-            <>
-              <FormField
-                control={pmEventForm.control}
-                name="logTitle"
+          </div>
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="task" className="text-right">
+            Task
+          </Label>
+          <div className="col-span-3">
+            <Controller
+              name="taskTitle"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setTaskSearch(e.target.value);
+                    setFilteredTasks(
+                      tasks.filter((task) =>
+                        task.title
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase())
+                      )
+                    );
+                  }}
+                  placeholder="Search for a task"
+                />
+              )}
+            />
+            {filteredTasks.length > 0 && (
+              <select
+                className="mt-2 w-full border rounded"
+                onChange={(e) => {
+                  const selectedTask = tasks.find(
+                    (task) => task.id === e.target.value
+                  );
+                  if (selectedTask) {
+                    setValue("taskTitle", selectedTask.title);
+                    setValue("taskId", selectedTask.id);
+                    setTaskSearch("");
+                    setFilteredTasks([]);
+                  }
+                }}
+              >
+                <option value="">Select a task</option>
+                {filteredTasks.map((task) => (
+                  <option key={task.id} value={task.id}>
+                    {task.title}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        </div>
+        {!initialData && (
+          <>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="logTitle" className="text-right">
+                Log Title (optional)
+              </Label>
+              <Input
+                id="logTitle"
+                {...register("logTitle")}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="logDuration" className="text-right">
+                Log Duration (optional)
+              </Label>
+              <Controller
+                name="logDuration"
+                control={control}
+                defaultValue={0}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Log Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <Input
+                    type="number"
+                    id="logDuration"
+                    {...field}
+                    onChange={(e) =>
+                      field.onChange(
+                        Math.round(Number(e.target.value) / 15) * 15
+                      )
+                    }
+                    className="col-span-3"
+                  />
                 )}
               />
-
-              <FormField
-                control={pmEventForm.control}
-                name="duration"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Log Duration</FormLabel>
-                    <FormControl>
-                      <Input type="number" step={0.25} min={0} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
-          <DialogFooter>
-            <Button type="submit">
-              {initialData ? "Update Event" : "Add Event"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </Form>
+            </div>
+          </>
+        )}
+        <DialogFooter>
+          <Button type="submit">
+            {initialData ? "Update Event" : "Add Event"}
+          </Button>
+        </DialogFooter>
+      </form>
     );
   };
 
@@ -471,7 +477,7 @@ export default function Events() {
       <Header breadcrumbs={["Events"]} />
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">
-          {format(new Date(day || today), "MMMM d, yyyy")}
+          {format(new Date(), "MMMM d, yyyy")}
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -493,7 +499,7 @@ export default function Events() {
           </DialogContent>
         </Dialog>
 
-        {eventsData?.data.map((event) => (
+        {events.map((event) => (
           <Collapsible key={event.id} className="mb-4 border rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -501,10 +507,10 @@ export default function Events() {
                 <div className="mt-2 flex items-center space-x-2 text-sm text-gray-500">
                   <ListChecks className="h-4 w-4" />
                   <Link
-                    href={`/tasks?taskId=${event.task?.id}`}
+                    href={`/tasks?id=${event.taskId}`}
                     className="hover:underline"
                   >
-                    {event.task?.title}
+                    {event.taskTitle}
                   </Link>
                   <span>-</span>
                   <span>{format(event.createdAt, "MMM d, yyyy")}</span>

@@ -85,7 +85,7 @@ export const mockEvents: PmEvent[] = [
     logs: [
       {
         id: "4d41703f-2e4c-42f6-8df5-bb0b346c9349",
-        description: "Meeting preparation",
+        title: "Meeting preparation",
         duration: 30,
         createdAt: new Date("2023-06-18"),
         modifiedAt: new Date("2023-06-18"),
@@ -93,7 +93,7 @@ export const mockEvents: PmEvent[] = [
       },
       {
         id: "80e6f3a7-3b16-42d7-b53b-6c1381be3f7b",
-        description: "Team discussion",
+        title: "Team discussion",
         duration: 60,
         createdAt: new Date("2023-06-18"),
         modifiedAt: new Date("2023-06-18"),
@@ -101,7 +101,7 @@ export const mockEvents: PmEvent[] = [
       },
       {
         id: "36fd3539-e342-4f22-8b5e-bb529b6c36b2",
-        description: "Documentation",
+        title: "Documentation",
         duration: 30,
         createdAt: new Date("2023-06-18"),
         modifiedAt: new Date("2023-06-18"),
@@ -120,7 +120,7 @@ export const mockEvents: PmEvent[] = [
     logs: [
       {
         id: "44f29af9-f1de-4d2b-bfa5-f6f53322fa8b",
-        description: "Slide creation",
+        title: "Slide creation",
         duration: 45,
         createdAt: new Date("2023-06-18"),
         modifiedAt: new Date("2023-06-18"),
@@ -128,7 +128,7 @@ export const mockEvents: PmEvent[] = [
       },
       {
         id: "4f2c3e38-c9ad-4abf-9c8c-9082b57e46b4",
-        description: "Rehearsal",
+        title: "Rehearsal",
         duration: 30,
         createdAt: new Date("2023-06-18"),
         eventId: "6821e7d6-632b-45b1-bdf5-22c3b93b51a3",
@@ -136,7 +136,7 @@ export const mockEvents: PmEvent[] = [
       },
       {
         id: "8b54e365-6c3d-41ab-8de6-3650c7b75e6d",
-        description: "Actual presentation",
+        title: "Actual presentation",
         duration: 15,
         createdAt: new Date("2023-06-18"),
         eventId: "6821e7d6-632b-45b1-bdf5-22c3b93b51a3",

@@ -81,9 +81,11 @@ export type PmEvent = {
   taskId?: UUID;
   taskTitle?: string;
   logs: Log[];
+  logTitle?: string;
   bookings?: Booking[];
   duration: number;
   totalBooked: number;
+  task?: Task;
 };
 
 export type Log = {
@@ -91,8 +93,9 @@ export type Log = {
   createdAt: Date;
   modifiedAt: Date;
   eventId: UUID;
-  description: string;
+  title: string;
   duration: number;
+  // description: string;
 };
 
 export type Booking = {
