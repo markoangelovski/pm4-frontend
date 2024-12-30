@@ -2,31 +2,73 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as z from "zod";
+import { useLoginMutation } from "@/hooks/use-auth";
+import { useEffect } from "react";
+import { toast } from "@/hooks/use-toast";
+
+const loginSchema = z.object({
+  username: z.string().min(1, { message: "Username is required" }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const schema = z.object({
-    username: z.string().min(1, { message: "Username is required" }),
-    password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters long" }),
-  });
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: any) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error,
+      });
+    }
+  }, [searchParams]);
+
+  const { mutate: login, isPending, error: authError } = useLoginMutation();
+
+  const onSubmit = (data: LoginFormData) => {
+    console.log("data:", data);
     if (errors.username || errors.password) {
       console.error("Validation errors:", errors);
     } else {
-      console.log("Login attempt with:", data);
+      login(data, {
+        onSuccess: (response) => {
+          // Handle successful login
+          console.log("Login successful:", response);
+          sessionStorage.setItem("access", JSON.stringify(response.results[0]));
+          router.push(searchParams.get("callback") || "/");
+        },
+        onError: (error) => {
+          // Handle login error
+          console.error("Login error:", error);
+        },
+      });
     }
   };
+
+  useEffect(() => {
+    if (authError) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: authError?.message || "An unknown error occurred.",
+      });
+    }
+  }, [authError]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -79,7 +121,7 @@ export default function LoginPage() {
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
-            Sign In
+            {isPending ? "Logging in..." : "Sign In"}
           </button>
         </div>
       </form>
