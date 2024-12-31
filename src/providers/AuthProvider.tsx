@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingAnimation from "@/components/LoadingAnimation";
+import LoadingAnimation from "@/components/pm/common/LoadingAnimation";
 import { useProfileQuery } from "@/hooks/use-auth";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -28,7 +28,7 @@ export default function AuthProvider({
     if (isSuccess && (isLogin || isRegister)) {
       router.push(`/`);
     }
-  }, [isSuccess, isError, error, router, pathname]);
+  }, [isLogin, isRegister, isSuccess, isError, error, router, pathname]);
 
   // Show loading animation while the profile query is in progress
   if (isPending) return <LoadingAnimation />;

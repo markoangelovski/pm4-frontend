@@ -1,3 +1,4 @@
+import FilterSort from "@/components/pm/common/filter-sort";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function Tasks() {
-  return <div>Tasks</div>;
+  return (
+    <>
+      <FilterSort />
+    </>
+  );
 }

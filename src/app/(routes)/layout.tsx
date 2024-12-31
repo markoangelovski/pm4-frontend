@@ -4,8 +4,8 @@ import "../globals.css";
 import TanstackProvider from "@/providers/TanstackProvider";
 import AuthProvider from "@/providers/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
-import TopBar from "@/components/top-bar";
-import Sidebar from "@/components/sidebar";
+import TopBar from "@/components/pm/common/top-bar";
+import Sidebar from "@/components/pm/common/sidebar";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
