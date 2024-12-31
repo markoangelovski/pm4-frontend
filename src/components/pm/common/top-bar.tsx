@@ -25,6 +25,7 @@ const TopBar = () => {
           className="h-10 w-10 mr-2"
           height={40}
           width={40}
+          priority
         />
       </Link>
       <DropdownMenu>

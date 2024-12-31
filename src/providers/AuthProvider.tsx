@@ -2,7 +2,7 @@
 
 import LoadingAnimation from "@/components/pm/common/LoadingAnimation";
 import { useProfileQuery } from "@/hooks/use-auth";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AuthProvider({
@@ -11,6 +11,7 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const isLogin = pathname === "/login";
   const isRegister = pathname === "/register";
@@ -22,13 +23,26 @@ export default function AuthProvider({
   useEffect(() => {
     // Basic case when not logged in user tries to access a protected page
     if (isError && !isLogin && !isRegister) {
-      router.push(`/login?callback=${pathname}&error=${error?.message}`);
+      router.push(
+        `/login?callback=${pathname + "?" + searchParams.toString()}&error=${
+          error?.message
+        }`
+      );
     }
     // Case when logged in user tries to access register or login page
     if (isSuccess && (isLogin || isRegister)) {
       router.push(`/`);
     }
-  }, [isLogin, isRegister, isSuccess, isError, error, router, pathname]);
+  }, [
+    isLogin,
+    isRegister,
+    isSuccess,
+    isError,
+    error,
+    router,
+    pathname,
+    searchParams,
+  ]);
 
   // Show loading animation while the profile query is in progress
   if (isPending) return <LoadingAnimation />;

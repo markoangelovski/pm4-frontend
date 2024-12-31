@@ -14,7 +14,6 @@ import {
 const sortOptions = [
   { label: "Default", value: "default" },
   { label: "Title", value: "title" },
-  { label: "Description", value: "description" },
   { label: "Project Lead", value: "pl" },
   { label: "Created", value: "created" },
   { label: "Modified", value: "modified" },

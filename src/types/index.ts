@@ -13,3 +13,15 @@ export type User = {
   email: string;
   createdAt: string;
 };
+
+export type Project = {
+  id: string;
+  title: string;
+  description: string;
+  pl: string;
+  upcomingTasks: number;
+  inProgressTasks: number;
+  doneTasks: number;
+  createdAt: Date;
+  modifiedAt: Date;
+};

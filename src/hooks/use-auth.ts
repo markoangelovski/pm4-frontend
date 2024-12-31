@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/utils";
 import { LoginFormData } from "@/app/(auth)/login/page";
-import { usePathname } from "next/navigation";
 import { RegisterFormData } from "@/app/(auth)/register/page";
 import { Response, User } from "@/types";
 
