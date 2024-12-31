@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/utils";
-import { LoginFormData } from "@/app/login/page";
+import { LoginFormData } from "@/app/(auth)/login/page";
+import { usePathname } from "next/navigation";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const loginPath = process.env.NEXT_PUBLIC_USER_LOGIN_PATH;
