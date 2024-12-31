@@ -4,58 +4,46 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import * as z from "zod";
-import { useLoginMutation } from "@/hooks/use-auth";
+import { useRegisterMutation } from "@/hooks/use-auth";
 import { useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
-const loginSchema = z.object({
+const registerSchema = z.object({
+  email: z.string().email().min(5, { message: "Email is required" }),
   username: z.string().min(1, { message: "Username is required" }),
   password: z.string().min(1, { message: "Password is required" }),
 });
 
-export type LoginFormData = z.infer<typeof loginSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
   });
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const error = searchParams.get("error");
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error,
-      });
-    }
-  }, [searchParams]);
 
   const {
-    mutate: loginCall,
+    mutate: registerCall,
     isPending,
-    error: loginError,
-  } = useLoginMutation();
+    error: registerError,
+  } = useRegisterMutation();
 
-  const onSubmit = (data: LoginFormData) => {
-    if (errors.username || errors.password) {
+  const onSubmit = (data: RegisterFormData) => {
+    if (errors.email || errors.username || errors.password) {
       console.error("Validation errors:", errors);
     } else {
-      loginCall(data, {
+      registerCall(data, {
         onSuccess: (response) => {
-          // Handle successful login
-          console.log("Login successful:", response);
-          sessionStorage.setItem("access", JSON.stringify(response.results[0]));
-          router.push(searchParams.get("callback") || "/");
+          // Handle successful registration
+          console.log("Registration successful:", response);
+          router.push("/login");
         },
         onError: (error) => {
           // Handle login error
@@ -66,14 +54,14 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    if (loginError) {
+    if (registerError) {
       toast({
         variant: "destructive",
         title: "Authentication Error",
-        description: loginError?.message || "An unknown error occurred.",
+        description: registerError?.message || "An unknown error occurred.",
       });
     }
-  }, [loginError]);
+  }, [registerError]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -90,6 +78,26 @@ export default function LoginPage() {
             width={40}
           />
           <h1 className="text-2xl font-bold">PM 4</h1>
+        </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+            htmlFor="email"
+          >
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            {...register("email")}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="john.doe@example.com"
+          />
+          {errors.email?.message && (
+            <p className="text-red-500 text-xs italic">
+              {errors.email.message as string}
+            </p>
+          )}
         </div>
         <div className="mb-4">
           <label
@@ -141,12 +149,11 @@ export default function LoginPage() {
           </button>
         </div>
         <div className="mt-4">
-          <span className="text-gray-500 text-sm">Don't have an account? </span>
-          <Link
-            href="/register"
-            className="text-blue-500 hover:underline text-sm"
-          >
-            Sign up!
+          <span className="text-gray-500 text-sm">
+            Already have an account?{" "}
+          </span>
+          <Link href="/login" className="text-blue-500 hover:underline text-sm">
+            Log in!
           </Link>
         </div>
       </form>

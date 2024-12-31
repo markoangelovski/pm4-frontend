@@ -14,6 +14,8 @@ import Image from "next/image";
 
 const TopBar = () => {
   const router = useRouter();
+  const userData = JSON.parse(sessionStorage.getItem("access") || "{}");
+
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-2 flex justify-between items-center">
       <Link href="/" className="flex items-center">
@@ -33,6 +35,7 @@ const TopBar = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem disabled>{userData.username}</DropdownMenuItem>
           <Link href="/profile" className="">
             <DropdownMenuItem>Profile</DropdownMenuItem>
           </Link>
