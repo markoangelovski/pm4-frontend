@@ -22,6 +22,6 @@ export type Project = {
   upcomingTasks: number;
   inProgressTasks: number;
   doneTasks: number;
-  createdAt: Date;
-  modifiedAt: Date;
+  createdAt: string;
+  modifiedAt: string;
 };

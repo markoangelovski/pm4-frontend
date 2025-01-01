@@ -13,3 +13,12 @@ export const useProjectsQuery = () => {
     retry: false,
   });
 };
+
+export const useProjectQuery = (projectId: string) => {
+  return useQuery({
+    queryKey: ["project", projectId],
+    queryFn: (): Promise<Response<Project>> =>
+      fetchWithAuth(`${backendUrl}${projectsPath}/${projectId}`),
+    retry: false,
+  });
+};
