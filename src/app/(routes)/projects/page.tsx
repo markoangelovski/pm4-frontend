@@ -5,6 +5,7 @@ import FilterSort from "@/components/pm/common/filter-sort";
 import ProjectList from "@/components/pm/projects/project-list";
 import { useSearchParams } from "next/navigation";
 import ProjectDetailPage from "@/components/pm/projects/project-detail";
+import ProjectButtons from "@/components/pm/projects/project-button";
 
 export default function Projects() {
   const { data: projectsData } = useProjectsQuery();
@@ -17,6 +18,7 @@ export default function Projects() {
 
   return (
     <>
+      <ProjectButtons />
       <FilterSort />
       <ProjectList projectsData={projectsData?.results || []} />
     </>

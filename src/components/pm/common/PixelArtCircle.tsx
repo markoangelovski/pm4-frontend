@@ -1,8 +1,10 @@
 // File: components/PixelArtCircle.tsx
+import { cn } from "@/lib/utils";
 import React, { FC } from "react";
 
 interface PixelArtCircleProps {
   input: string;
+  className?: string;
 }
 
 const stringToColor = (string: string, index: number): string => {
@@ -15,9 +17,14 @@ const stringToColor = (string: string, index: number): string => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-const PixelArtCircle: FC<PixelArtCircleProps> = ({ input }) => {
+const PixelArtCircle: FC<PixelArtCircleProps> = ({ input, className }) => {
   return (
-    <div className="grid grid-cols-3 grid-rows-3 w-5 h-5 rounded-full overflow-hidden mr-4">
+    <div
+      className={cn(
+        "grid grid-cols-3 grid-rows-3 w-5 h-5 rounded-full overflow-hidden mr-4",
+        className
+      )}
+    >
       {Array.from({ length: 9 }).map((_, i) => (
         <div
           key={i}

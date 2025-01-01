@@ -49,7 +49,10 @@ export async function fetchWithAuth<T>(
 
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+    console.error("Error data:", errorData);
+    throw new Error(
+      errorData.errors[0].message || `HTTP error! status: ${res.status}`
+    );
   }
 
   return res.json();

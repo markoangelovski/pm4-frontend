@@ -1,8 +1,16 @@
 import React from "react";
-import { Calendar, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  UserRoundCogIcon,
+} from "lucide-react";
 import { useProjectQuery } from "@/hooks/use-projects";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import PixelArtCircle from "../common/PixelArtCircle";
+import ProjectButtons from "./project-button";
 
 export default function ProjectDetailPage({
   projectId,
@@ -12,14 +20,20 @@ export default function ProjectDetailPage({
   const { data: projectData, isLoading } = useProjectQuery(projectId);
 
   if (isLoading) return <ProjectDetailSkeleton />;
-  if (!projectData?.results[0]) return <div>No project found</div>;
+  if (!projectData?.results[0]) return <div>Project not found</div>;
 
   return (
     <div className="space-y-8">
       <header className="space-y-4">
-        <h1 className="text-xl font-bold text-gray-900">
-          {projectData?.results[0].title}
-        </h1>
+        <div className="flex items-center">
+          <PixelArtCircle
+            input={projectData?.results[0].id}
+            className="w-10 h-10"
+          />
+          <h1 className="text-xl font-bold text-gray-900">
+            {projectData?.results[0].title}
+          </h1>
+        </div>
         <p className="text-gray-600">{projectData?.results[0].description}</p>
       </header>
 
@@ -28,9 +42,13 @@ export default function ProjectDetailPage({
           <h2 className="font-semibold text-gray-900">Project Details</h2>
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-gray-600">
+              <UserRoundCogIcon className="w-5 h-5" />
+              <span>Project Lead: {projectData?.results[0].pl}</span>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-600">
               <Calendar className="w-5 h-5" />
               <span>
-                Created:
+                Created:{" "}
                 {format(
                   projectData?.results[0].createdAt || "",
                   "MMMM LL, yyyy"
@@ -83,6 +101,8 @@ export default function ProjectDetailPage({
           </div>
         </div>
       </div>
+
+      <ProjectButtons project={projectData?.results[0]} />
     </div>
   );
 }
