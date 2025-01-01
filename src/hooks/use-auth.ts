@@ -5,10 +5,10 @@ import { RegisterFormData } from "@/app/(auth)/register/page";
 import { Response, User } from "@/types";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
-const userPath = process.env.NEXT_PUBLIC_USER_PATH;
-const profilePath = process.env.NEXT_PUBLIC_USER_PROFILE_PATH;
-const registerPath = process.env.NEXT_PUBLIC_USER_REGISTER_PATH;
-const loginPath = process.env.NEXT_PUBLIC_USER_LOGIN_PATH;
+const userPath = process.env.NEXT_PUBLIC_USERS_PATH;
+const profilePath = process.env.NEXT_PUBLIC_USERS_PROFILE_PATH;
+const registerPath = process.env.NEXT_PUBLIC_USERS_REGISTER_PATH;
+const loginPath = process.env.NEXT_PUBLIC_USERS_LOGIN_PATH;
 
 export const useUserQuery = () => {
   return useQuery({

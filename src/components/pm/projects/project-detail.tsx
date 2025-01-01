@@ -12,15 +12,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PixelArtCircle from "../common/PixelArtCircle";
 import ProjectButtons from "./project-button";
 import { DeleteProjectButton } from "./delete-project-button";
+import TaskList from "../tasks/task-list";
+import { useTasksQuery } from "@/hooks/use-tasks";
+import StatusSelect from "../tasks/StatusSelect";
 
 export default function ProjectDetailPage({
   projectId,
 }: {
   projectId: string;
 }) {
-  const { data: projectData, isLoading } = useProjectQuery(projectId);
+  const { data: projectData, isLoading: isProjectLoading } =
+    useProjectQuery(projectId);
+  const { data: tasksData, isLoading: isTasksLoading } = useTasksQuery(); // TODO: add Tasks loading skeleton
 
-  if (isLoading) return <ProjectDetailSkeleton />;
+  if (isProjectLoading) return <ProjectDetailSkeleton />;
   if (!projectData?.results[0]) return <div>Project not found</div>;
 
   return (
@@ -111,6 +116,7 @@ export default function ProjectDetailPage({
             </div>
           </div>
         </div>
+        <TaskList tasksData={tasksData?.results || []} />
       </div>
     </>
   );

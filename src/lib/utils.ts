@@ -5,6 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export async function prettyStatus(status: string) {
+  return status
+    .split("-")
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" ");
+}
+
 export async function fetchWithAuth<T>(
   url: string,
   options?: { method?: "GET" | "POST" | "PATCH" | "DELETE"; body?: T }

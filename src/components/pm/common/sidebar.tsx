@@ -3,7 +3,7 @@ import { Briefcase, CheckSquare, BarChart2, Calendar } from "lucide-react";
 
 const sidebarItems = [
   { icon: Briefcase, label: "Projects", href: "/projects" },
-  { icon: CheckSquare, label: "Tasks", href: "/tasks" },
+  { icon: CheckSquare, label: "Tasks", href: "/tasks?status=in-progress" },
   { icon: BarChart2, label: "Stats", href: "/stats" },
   { icon: Calendar, label: "Events", href: "/events" },
 ];
