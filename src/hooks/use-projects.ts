@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/utils";
 import { Project, Response, User } from "@/types";
 import { ProjectFormData } from "@/components/pm/projects/project-form";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "./use-toast";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const projectsPath = process.env.NEXT_PUBLIC_PROJECTS_PATH;
@@ -79,27 +80,39 @@ export const useEditProjectMutation = () => {
   });
 };
 
-// export const useDeleteProject = (projectId: string) => {
-//   const queryClient = useQueryClient();
-//   return useMutation({
-//     mutationFn: async (): Promise<ApiResponse<Project>> => {
-//       return fetchWithAuth(`${backendUrl1}${projectsPath}/${projectId}`, {
-//         method: "DELETE",
-//       });
-//     },
-//     onSuccess: () => {
-//       queryClient.setQueryData(
-//         ["projects"],
-//         (oldData: ApiResponse<Project> | undefined) => {
-//           return oldData
-//             ? {
-//                 ...oldData,
-//                 data: oldData.data.filter((p) => p.id !== projectId),
-//               }
-//             : oldData;
-//         }
-//       );
-//       queryClient.removeQueries({ queryKey: ["project", projectId] });
-//     },
-//   });
-// };
+export const useDeleteProjectMutation = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get("projectId");
+
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () =>
+      fetchWithAuth(`${backendUrl}${projectsPath}/${projectId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      queryClient.setQueryData(
+        ["projects"],
+        (oldData: Response<Project> | undefined) => {
+          return oldData
+            ? {
+                ...oldData,
+                results: oldData.results.filter((p) => p.id !== projectId),
+              }
+            : oldData;
+        }
+      );
+      queryClient.removeQueries({ queryKey: ["project", projectId] });
+      router.push("/projects");
+    },
+    onError: (error) => {
+      console.error("Error deleting project:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+};

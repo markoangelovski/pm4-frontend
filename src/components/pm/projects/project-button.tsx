@@ -80,7 +80,11 @@ export default function ProjectButtons({ project }: ProjectButtonsProps) {
       {!project && (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => setIsEditing(false)} className="mb-6">
+            <Button
+              onClick={() => setIsEditing(false)}
+              className="mb-6"
+              title="Create new project"
+            >
               <PlusCircle className="mr-2 h-4 w-4" />
               New Project
             </Button>
@@ -104,6 +108,7 @@ export default function ProjectButtons({ project }: ProjectButtonsProps) {
               variant="outline"
               onClick={() => setIsEditing(true)}
               className="mb-6"
+              title={"Edit project " + project.title}
             >
               <Edit className="mr-2 h-4 w-4" />
               Edit Project

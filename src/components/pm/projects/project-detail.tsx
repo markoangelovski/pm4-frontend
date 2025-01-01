@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import PixelArtCircle from "../common/PixelArtCircle";
 import ProjectButtons from "./project-button";
+import { DeleteProjectButton } from "./delete-project-button";
 
 export default function ProjectDetailPage({
   projectId,
@@ -103,6 +104,7 @@ export default function ProjectDetailPage({
       </div>
 
       <ProjectButtons project={projectData?.results[0]} />
+      <DeleteProjectButton projectTitle={projectData?.results[0].title} />
     </div>
   );
 }
