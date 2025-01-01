@@ -6,6 +6,7 @@ import AuthProvider from "@/providers/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import TopBar from "@/components/pm/common/top-bar";
 import Sidebar from "@/components/pm/common/sidebar";
+import { Suspense } from "react";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -34,15 +35,17 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TanstackProvider>
-          <AuthProvider>
-            <div className="flex flex-col h-screen">
-              <TopBar />
-              <div className="flex flex-1 overflow-hidden">
-                <Sidebar />
-                <main className="flex-1 overflow-y-auto p-6">{children}</main>
+          <Suspense fallback={<div>Suspending...</div>}>
+            <AuthProvider>
+              <div className="flex flex-col h-screen">
+                <TopBar />
+                <div className="flex flex-1 overflow-hidden">
+                  <Sidebar />
+                  <main className="flex-1 overflow-y-auto p-6">{children}</main>
+                </div>
               </div>
-            </div>
-          </AuthProvider>
+            </AuthProvider>
+          </Suspense>
         </TanstackProvider>
         <Toaster />
       </body>

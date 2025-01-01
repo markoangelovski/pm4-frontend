@@ -4,6 +4,7 @@ import "../globals.css";
 import TanstackProvider from "@/providers/TanstackProvider";
 import AuthProvider from "@/providers/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
+import { Suspense } from "react";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -32,7 +33,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <TanstackProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <Suspense fallback={<div>Suspending...</div>}>
+            <AuthProvider>{children}</AuthProvider>
+          </Suspense>
         </TanstackProvider>
         <Toaster />
       </body>

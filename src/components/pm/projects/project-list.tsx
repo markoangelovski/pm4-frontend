@@ -11,18 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { v4 as uuidv4 } from "uuid";
 import { Project } from "@/types";
 import PixelArtCircle from "../common/PixelArtCircle";
 import { format } from "date-fns";
-
-// interface Project {
-//   id: string;
-//   title: string;
-//   pl: string;
-//   createdAt: Date;
-//   modifiedAt: Date;
-// }
 
 export default function ProjectList({
   projectsData,
