@@ -43,6 +43,9 @@ const TopBar = () => {
           <Link href="/settings" className="">
             <DropdownMenuItem>Settings</DropdownMenuItem>
           </Link>
+          <Link href="/apireference" className="">
+            <DropdownMenuItem>API</DropdownMenuItem>
+          </Link>
           <DropdownMenuItem
             onClick={() => {
               sessionStorage.removeItem("access");
