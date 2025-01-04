@@ -11,7 +11,7 @@ const projectsPath = process.env.NEXT_PUBLIC_PROJECTS_PATH;
 export const useProjectsQuery = () => {
   return useQuery({
     queryKey: ["projects"],
-    queryFn: (): Promise<Response<Project>> =>
+    queryFn: (): Promise<Response<ProjectFromServer>> =>
       fetchWithAuth(`${backendUrl}${projectsPath}`),
     retry: false,
   });
@@ -37,7 +37,7 @@ export const useCreateProjectMutation = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(
         ["projects"],
-        (oldData: Response<Project> | undefined) => {
+        (oldData: Response<ProjectFromServer> | undefined) => {
           return oldData
             ? {
                 ...oldData,
