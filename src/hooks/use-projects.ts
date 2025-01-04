@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/utils";
-import { Project, Response, User } from "@/types";
+import { Project, ProjectFromServer, Response, User } from "@/types";
 import { ProjectFormData } from "@/components/pm/projects/project-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "./use-toast";
@@ -20,7 +20,7 @@ export const useProjectsQuery = () => {
 export const useProjectQuery = (projectId: string) => {
   return useQuery({
     queryKey: ["project", projectId],
-    queryFn: (): Promise<Response<Project>> =>
+    queryFn: (): Promise<Response<ProjectFromServer>> =>
       fetchWithAuth(`${backendUrl}${projectsPath}/${projectId}`),
     retry: false,
   });
@@ -64,7 +64,7 @@ export const useEditProjectMutation = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(
         ["projects"],
-        (oldData: Response<Project> | undefined) => {
+        (oldData: Response<ProjectFromServer> | undefined) => {
           return oldData
             ? {
                 ...oldData,
@@ -94,7 +94,7 @@ export const useDeleteProjectMutation = () => {
     onSuccess: () => {
       queryClient.setQueryData(
         ["projects"],
-        (oldData: Response<Project> | undefined) => {
+        (oldData: Response<ProjectFromServer> | undefined) => {
           return oldData
             ? {
                 ...oldData,

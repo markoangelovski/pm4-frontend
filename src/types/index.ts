@@ -15,32 +15,42 @@ export type User = {
 };
 
 export type Project = {
-  id: string;
   title: string;
   description: string;
   pl: string;
   upcomingTasks: number;
   inProgressTasks: number;
   doneTasks: number;
-  createdAt: string;
-  modifiedAt: string;
 };
 
-enum TaskStatus {
+export interface ProjectFromServer extends Project {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+}
+
+export enum TaskStatus {
   UPCOMING = "upcoming",
   IN_PROGRESS = "in-progress",
   COMPLETED = "completed",
 }
 
-export type Task = {
-  id: string;
+export interface Task {
   projectId: string;
   title: string;
-  description?: string;
+  description: string;
   pl: string;
   jiraLink?: string;
-  dueDate?: Date;
+  dueDate: string;
   status: TaskStatus;
+}
+
+export interface TaskFromServer extends Task {
+  id: string;
   createdAt: string;
   modifiedAt: string;
-};
+}
+
+export interface TaskFromServerWithProject extends TaskFromServer {
+  project: Project;
+}

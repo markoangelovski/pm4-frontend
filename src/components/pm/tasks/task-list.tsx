@@ -11,13 +11,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Task } from "@/types";
+import { TaskFromServer } from "@/types";
 import PixelArtCircle from "../common/PixelArtCircle";
 import { format } from "date-fns";
 import { prettyStatus } from "@/lib/utils";
 import { Link2 } from "lucide-react";
 
-export default function TaskList({ tasksData }: { tasksData: Task[] }) {
+export default function TaskList({
+  tasksData,
+}: {
+  tasksData: TaskFromServer[];
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -93,7 +97,22 @@ export default function TaskList({ tasksData }: { tasksData: Task[] }) {
                 </Link>
               </TableCell>
               <TableCell>{prettyStatus(task.status)}</TableCell>
-              <TableCell>{task.pl}</TableCell>
+
+              <TableCell>
+                <Link
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set("pl", task.pl);
+                    router.push(`/tasks?${params.toString()}`);
+                  }}
+                  className="text-blue-600 hover:underline"
+                >
+                  {task.pl}
+                </Link>
+              </TableCell>
+
               <TableCell>{format(task.createdAt, "MMMM LL, yyyy")}</TableCell>
               <TableCell>{format(task.modifiedAt, "MMMM LL, yyyy")}</TableCell>
               <TableCell>

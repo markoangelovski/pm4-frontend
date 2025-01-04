@@ -11,14 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Project } from "@/types";
+import { Project, ProjectFromServer } from "@/types";
 import PixelArtCircle from "../common/PixelArtCircle";
 import { format } from "date-fns";
 
 export default function ProjectList({
   projectsData,
 }: {
-  projectsData: Project[];
+  projectsData: ProjectFromServer[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -68,7 +68,7 @@ export default function ProjectList({
   const handleProjectClick = (projectId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("projectId", projectId);
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}&status=in-progress`);
   };
 
   return (
