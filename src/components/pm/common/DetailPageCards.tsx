@@ -136,19 +136,19 @@ export default function DetailPageCards({ data }: DetailPageCardsProps) {
           <div className="flex items-center space-x-2 text-gray-600">
             <Calendar className="w-5 h-5" />
             <span>
-              Created: {format(data.createdAt || "", "MMMM LL, yyyy")}
+              Created: {format(data.createdAt || "", "MMMM dd, yyyy")}
             </span>
           </div>
           <div className="flex items-center space-x-2 text-gray-600">
             <Clock className="w-5 h-5" />
             <span>
-              Last Modified: {format(data.createdAt || "", "MMMM LL, yyyy")}
+              Last Modified: {format(data.modifiedAt || "", "MMMM dd, yyyy")}
             </span>
           </div>
           {type === "task" && "dueDate" in data && data.dueDate && (
             <div className="flex items-center space-x-2 text-gray-600">
               <CalendarSync className="w-5 h-5" />
-              <span>Due Date: {format(data.dueDate, "MMMM LL, yyyy")}</span>
+              <span>Due Date: {format(data.dueDate, "MMMM dd, yyyy")}</span>
             </div>
           )}
         </div>

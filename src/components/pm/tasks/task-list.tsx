@@ -113,8 +113,8 @@ export default function TaskList({
                 </Link>
               </TableCell>
 
-              <TableCell>{format(task.createdAt, "MMMM LL, yyyy")}</TableCell>
-              <TableCell>{format(task.modifiedAt, "MMMM LL, yyyy")}</TableCell>
+              <TableCell>{format(task.createdAt, "MMMM dd, yyyy")}</TableCell>
+              <TableCell>{format(task.modifiedAt, "MMMM dd, yyyy")}</TableCell>
               <TableCell>
                 {task.jiraLink && (
                   <Link

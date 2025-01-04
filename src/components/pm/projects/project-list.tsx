@@ -98,8 +98,8 @@ export default function ProjectList({
               </Link>
             </TableCell>
             <TableCell>{project.pl}</TableCell>
-            <TableCell>{format(project.createdAt, "MMMM LL, yyyy")}</TableCell>
-            <TableCell>{format(project.modifiedAt, "MMMM LL, yyyy")}</TableCell>
+            <TableCell>{format(project.createdAt, "MMMM dd, yyyy")}</TableCell>
+            <TableCell>{format(project.modifiedAt, "MMMM dd, yyyy")}</TableCell>
           </TableRow>
         ))}
       </TableBody>
