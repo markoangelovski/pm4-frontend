@@ -7,7 +7,7 @@ import {
   TaskFromServerWithProject,
 } from "@/types";
 import { ProjectFormData } from "@/components/pm/projects/project-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "./use-toast";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
@@ -16,6 +16,7 @@ const tasksPath = process.env.NEXT_PUBLIC_TASKS_PATH;
 export const useTasksQuery = () => {
   const url = new URL(`${backendUrl}${tasksPath}`);
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const projectId = searchParams.get("projectId");
   const status = searchParams.get("status");
@@ -31,11 +32,15 @@ export const useTasksQuery = () => {
   if (pl) url.searchParams.append("pl", pl);
   if (q) url.searchParams.append("q", q);
 
+  const isEventsPage = pathname === "/events";
+  const shouldDisable = isEventsPage && (!q || q.length < 3);
+
   return useQuery({
     queryKey: ["tasks", { projectId, status, limit, offset, pl, q }],
     queryFn: (): Promise<Response<TaskFromServer>> =>
       fetchWithAuth(url.toString()),
     retry: false,
+    enabled: !shouldDisable,
   });
 };
 

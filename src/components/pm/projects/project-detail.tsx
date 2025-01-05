@@ -39,6 +39,7 @@ export default function ProjectDetailPage({
             <DeleteButton
               key="delete-button"
               title={projectData?.results[0].title}
+              variant="destructive"
               onDelete={() => deleteProjectCall()}
             />,
           ]}

@@ -21,7 +21,7 @@ const PixelArtCircle: FC<PixelArtCircleProps> = ({ input, className }) => {
   return (
     <div
       className={cn(
-        "grid grid-cols-3 grid-rows-3 w-5 h-5 rounded-full overflow-hidden mr-4",
+        "grid grid-cols-3 grid-rows-3 w-5 h-5 rounded-full overflow-hidden",
         className
       )}
     >

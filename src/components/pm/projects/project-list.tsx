@@ -93,7 +93,7 @@ export default function ProjectList({
                 }}
                 className="text-blue-600 hover:underline flex items-center"
               >
-                <PixelArtCircle input={project.id} />
+                <PixelArtCircle input={project.id} className="mr-2" />
                 {project.title}
               </Link>
             </TableCell>

@@ -17,7 +17,7 @@ const TitleDescription: React.FC<TitleDescriptionProps> = ({
     <header className="flex justify-between">
       <div className="space-y-4">
         <div className="flex items-center">
-          <PixelArtCircle input={data.id} className="w-10 h-10" />
+          <PixelArtCircle input={data.id} className="w-10 h-10 mr-4" />
           <h1 className="text-xl font-bold text-gray-900">{data.title}</h1>
         </div>
         <p className="text-gray-600">{data.description}</p>

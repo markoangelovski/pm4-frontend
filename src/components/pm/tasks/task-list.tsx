@@ -92,7 +92,7 @@ export default function TaskList({
                   }}
                   className="text-blue-600 hover:underline flex items-center"
                 >
-                  <PixelArtCircle input={task.id} />
+                  <PixelArtCircle input={task.id} className="mr-2" />
                   {task.title}
                 </Link>
               </TableCell>

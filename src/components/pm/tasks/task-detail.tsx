@@ -24,6 +24,7 @@ export default function TaskDetailPage({ taskId }: { taskId: string }) {
             <DeleteButton
               key="delete-button"
               title={taskData?.results[0].title}
+              variant="destructive"
               onDelete={() => deleteTaskCall()}
             />,
           ]}

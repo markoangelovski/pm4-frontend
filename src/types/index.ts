@@ -54,3 +54,21 @@ export interface TaskFromServer extends Task {
 export interface TaskFromServerWithProject extends TaskFromServer {
   project: Project;
 }
+
+export interface Log {
+  id: string;
+  title: string;
+  duration: number;
+  createdAt: string;
+  modifiedAt: string;
+}
+
+export interface PmEvent {
+  id: string;
+  title: string;
+  day: string;
+  createdAt: string;
+  modifiedAt: string;
+  logs: Log[];
+  task: TaskFromServer | null;
+}

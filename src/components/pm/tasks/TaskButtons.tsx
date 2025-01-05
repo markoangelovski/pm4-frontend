@@ -5,19 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Edit, PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TaskForm } from "./TaskFrom";
-import { Project, Task } from "@/types";
+import { Task } from "@/types";
 import { useCreateTaskMutation, useEditTaskMutation } from "@/hooks/use-tasks";
 
 interface TaskButtonsProps {
   projectId: string;
   task?: Task;
-  // onSubmit: (data: Task) => Promise<void>;
 }
 
-export function TaskButtons({
-  projectId,
-  task /* , onSubmit */,
-}: TaskButtonsProps) {
+export function TaskButtons({ projectId, task }: TaskButtonsProps) {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const { toast } = useToast();
 

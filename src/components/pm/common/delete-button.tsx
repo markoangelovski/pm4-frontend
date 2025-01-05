@@ -14,17 +14,27 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useDeleteProjectMutation } from "@/hooks/use-projects";
 
 interface DeleteButtonProps {
   title: string;
+  variant:
+    | "default"
+    | "destructive"
+    | "ghost"
+    | "link"
+    | "outline"
+    | "secondary";
+  className?: string;
   onDelete: () => void;
 }
 
-export function DeleteButton({ title, onDelete }: DeleteButtonProps) {
+export function DeleteButton({
+  title,
+  variant,
+  className,
+  onDelete,
+}: DeleteButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const { mutate: deleteProjectCall } = useDeleteProjectMutation();
 
   const handleDelete = () => {
     onDelete();
@@ -35,9 +45,9 @@ export function DeleteButton({ title, onDelete }: DeleteButtonProps) {
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button
-          variant="destructive"
+          variant={variant || "default"}
           size="icon"
-          className="ml-2"
+          className={className}
           title={"Delete " + title}
         >
           <Trash2 className="h-4 w-4" />
