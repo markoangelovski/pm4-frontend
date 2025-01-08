@@ -15,10 +15,15 @@ import { useTasksQuery } from "@/hooks/use-tasks";
 interface SearchTaskProps {
   onSelect: (taskId: string | undefined) => void;
   value?: string;
+  initialTaskTitle?: string;
 }
 
-export default function SearchTask({ onSelect, value }: SearchTaskProps) {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function SearchTask({
+  onSelect,
+  value,
+  initialTaskTitle,
+}: SearchTaskProps) {
+  const [searchTerm, setSearchTerm] = useState(initialTaskTitle || "");
   const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
     value
   );
@@ -43,6 +48,18 @@ export default function SearchTask({ onSelect, value }: SearchTaskProps) {
       onSelect(undefined);
     }
   }, [searchTerm, onSelect]);
+
+  useEffect(() => {
+    if (initialTaskTitle && tasksQuery.data) {
+      const initialTask = tasksQuery.data.results.find(
+        (task) => task.title === initialTaskTitle
+      );
+      if (initialTask) {
+        setSelectedTaskId(initialTask.id);
+        onSelect(initialTask.id);
+      }
+    }
+  }, [initialTaskTitle, tasksQuery.data, onSelect]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;

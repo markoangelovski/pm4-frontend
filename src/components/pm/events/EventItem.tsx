@@ -2,44 +2,36 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import {
-  Calendar,
-  Clock,
-  ChevronDown,
-  ChevronUp,
-  Trash2,
-  Edit2,
-} from "lucide-react";
+import { Calendar, Clock, ChevronDown, ChevronUp, Edit2 } from "lucide-react";
 import { format } from "date-fns";
 import LogsList from "./LogsList";
 import { PmEvent } from "@/types";
 import { DeleteButton } from "../common/delete-button";
 import PixelArtCircle from "../common/PixelArtCircle";
+import {
+  useDeleteEventMutation,
+  useEditEventMutation,
+  useEditLogMutation,
+  useDeleteLogMutation,
+} from "@/hooks/use-events";
+import CreateEditEventButton from "./CreateEditEventButton";
+import AddLogDialog from "./AddLogDialog";
+import { Button } from "@/components/ui/button";
 
 interface EventItemProps {
   event: PmEvent;
-  onDeleteEvent: (eventId: string) => void;
-  onUpdateEventTitle: (eventId: string, newTitle: string) => void;
-  onUpdateLogTitle: (
-    eventId: string,
-    logId: string,
-    newTitle: string,
-    newDuration: number
-  ) => void;
-  onDeleteLog: (eventId: string, logId: string) => void;
 }
 
-export default function EventItem({
-  event,
-  onDeleteEvent,
-  onUpdateEventTitle,
-  onUpdateLogTitle,
-  onDeleteLog,
-}: EventItemProps) {
+export default function EventItem({ event }: EventItemProps) {
   const [isLogsOpen, setIsLogsOpen] = useState(false);
   const [isEditingEventTitle, setIsEditingEventTitle] = useState(false);
   const [editedEventTitle, setEditedEventTitle] = useState(event.title);
   const eventTitleInputRef = useRef<HTMLInputElement>(null);
+
+  const editEventMutation = useEditEventMutation();
+  const deleteEventMutation = useDeleteEventMutation();
+  const editLogMutation = useEditLogMutation();
+  const deleteLogMutation = useDeleteLogMutation();
 
   useEffect(() => {
     if (isEditingEventTitle && eventTitleInputRef.current) {
@@ -49,13 +41,63 @@ export default function EventItem({
 
   const totalDuration = event.logs.reduce((sum, log) => sum + log.duration, 0);
 
+  const handleUpdateEventTitle = async () => {
+    setIsEditingEventTitle(false);
+    if (editedEventTitle !== event.title) {
+      try {
+        await editEventMutation.mutateAsync({
+          id: event.id,
+          title: editedEventTitle,
+        });
+      } catch (error) {
+        console.error("Failed to update event title:", error);
+        setEditedEventTitle(event.title);
+      }
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    try {
+      await deleteEventMutation.mutateAsync(event.id);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
+  };
+
+  const handleUpdateLogTitle = async (
+    logId: string,
+    newTitle: string,
+    newDuration: number
+  ) => {
+    try {
+      await editLogMutation.mutateAsync({
+        id: logId,
+        title: newTitle,
+        duration: newDuration,
+        eventId: event.id,
+      });
+    } catch (error) {
+      console.error("Failed to update log:", error);
+    }
+  };
+
+  const handleDeleteLog = async (logId: string) => {
+    try {
+      await deleteLogMutation.mutateAsync({ logId, eventId: event.id });
+    } catch (error) {
+      console.error("Failed to delete log:", error);
+    }
+  };
+
   return (
     <div className="border rounded-lg p-4 shadow-sm relative min-h-[120px]">
+      <CreateEditEventButton event={event} />
+
       <DeleteButton
         variant="ghost"
         title={event.title}
         className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-        onDelete={() => onDeleteEvent(event.id)}
+        onDelete={handleDeleteEvent}
       />
 
       <div className="mb-2">
@@ -65,10 +107,7 @@ export default function EventItem({
             type="text"
             value={editedEventTitle}
             onChange={(e) => setEditedEventTitle(e.target.value)}
-            onBlur={() => {
-              setIsEditingEventTitle(false);
-              onUpdateEventTitle(event.id, editedEventTitle);
-            }}
+            onBlur={handleUpdateEventTitle}
             className="text-lg font-semibold w-full"
           />
         ) : (
@@ -80,6 +119,7 @@ export default function EventItem({
             <Edit2 className="w-4 h-4 inline-block ml-2 text-gray-500" />
           </h3>
         )}
+
         {event.task && (
           <Link
             href={`/tasks?taskId=${event.task.id}`}
@@ -117,15 +157,17 @@ export default function EventItem({
           )}
           {isLogsOpen ? "Hide Logs" : "Show Logs"}
         </button>
+        <AddLogDialog
+          eventId={event.id}
+          onSuccess={() => setIsLogsOpen(true)}
+        />
       </div>
 
       {isLogsOpen && (
         <LogsList
           logs={event.logs}
-          onUpdateLogTitle={(logId, newTitle, newDuration) =>
-            onUpdateLogTitle(event.id, logId, newTitle, newDuration)
-          }
-          onDeleteLog={(logId) => onDeleteLog(event.id, logId)}
+          onUpdateLogTitle={handleUpdateLogTitle}
+          onDeleteLog={handleDeleteLog}
         />
       )}
     </div>
