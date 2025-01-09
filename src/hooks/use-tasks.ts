@@ -53,6 +53,22 @@ export const useTaskQuery = (taskId: string) => {
   });
 };
 
+export const useSearchTaskQuery = (searchTerm = "") => {
+  const pathname = usePathname();
+
+  // To prevent the hook from firing on /events page when Create Edit Event dialog is open
+  const isEventsPage = pathname === "/events";
+  const shouldDisable = isEventsPage && (!searchTerm || searchTerm.length < 3);
+
+  return useQuery({
+    queryKey: ["tasks", { searchTerm }],
+    queryFn: (): Promise<Response<TaskFromServer>> =>
+      fetchWithAuth(`${backendUrl}${tasksPath}?q=${searchTerm}`),
+    retry: false,
+    enabled: !shouldDisable,
+  });
+};
+
 export const useCreateTaskMutation = () => {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -63,7 +79,6 @@ export const useCreateTaskMutation = () => {
     limit: searchParams.get("limit"),
     offset: searchParams.get("offset"),
     pl: searchParams.get("pl"),
-    q: searchParams.get("q"),
   };
 
   return useMutation({
@@ -98,7 +113,6 @@ export const useEditTaskMutation = () => {
     limit: searchParams.get("limit"),
     offset: searchParams.get("offset"),
     pl: searchParams.get("pl"),
-    q: searchParams.get("q"),
   };
 
   const queryClient = useQueryClient();

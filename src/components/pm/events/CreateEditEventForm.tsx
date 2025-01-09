@@ -68,7 +68,7 @@ export default function CreateEditEventForm({
     try {
       const payload = {
         ...data,
-        taskId: data.taskId || undefined,
+        taskId: data.taskId || "",
       };
 
       if (event) {

@@ -1,15 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/utils";
-import {
-  Log,
-  PmEvent,
-  Response,
-  Task,
-  TaskFromServer,
-  TaskFromServerWithProject,
-} from "@/types";
-import { ProjectFormData } from "@/components/pm/projects/project-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Log, PmEvent, Response } from "@/types";
+import { useSearchParams } from "next/navigation";
 import { toast } from "./use-toast";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
@@ -90,22 +82,8 @@ export const useEditEventMutation = () => {
         method: "PATCH",
         body: payload,
       }),
-    onSuccess: (data) => {
-      queryClient.setQueryData(
-        ["events", { taskId, day }],
-        (oldData: Response<PmEvent> | undefined) => {
-          return oldData
-            ? {
-                ...oldData,
-                results: oldData.results.map((event) =>
-                  event.id === data.results[0].id
-                    ? { ...event, ...data.results[0] }
-                    : event
-                ),
-              }
-            : data;
-        }
-      );
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["events", { taskId, day }] });
     },
   });
 };

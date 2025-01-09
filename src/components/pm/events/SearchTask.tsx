@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTasksQuery } from "@/hooks/use-tasks";
+import { useSearchTaskQuery } from "@/hooks/use-tasks";
 
 interface SearchTaskProps {
   onSelect: (taskId: string | undefined) => void;
@@ -27,20 +26,8 @@ export default function SearchTask({
   const [selectedTaskId, setSelectedTaskId] = useState<string | undefined>(
     value
   );
-  const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const tasksQuery = useTasksQuery();
-
-  useEffect(() => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    if (searchTerm) {
-      newParams.set("q", searchTerm);
-    } else {
-      newParams.delete("q");
-    }
-    router.push(`?${newParams.toString()}`, { scroll: false });
-  }, [searchTerm, router, searchParams]);
+  const { data: tasksData, isLoading } = useSearchTaskQuery(searchTerm);
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -50,8 +37,8 @@ export default function SearchTask({
   }, [searchTerm, onSelect]);
 
   useEffect(() => {
-    if (initialTaskTitle && tasksQuery.data) {
-      const initialTask = tasksQuery.data.results.find(
+    if (initialTaskTitle && tasksData) {
+      const initialTask = tasksData.results.find(
         (task) => task.title === initialTaskTitle
       );
       if (initialTask) {
@@ -59,7 +46,7 @@ export default function SearchTask({
         onSelect(initialTask.id);
       }
     }
-  }, [initialTaskTitle, tasksQuery.data, onSelect]);
+  }, [initialTaskTitle, tasksData, onSelect]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -71,9 +58,7 @@ export default function SearchTask({
   };
 
   const handleSelectChange = (taskId: string) => {
-    const selectedTask = tasksQuery.data?.results?.find(
-      (task) => task.id === taskId
-    );
+    const selectedTask = tasksData?.results?.find((task) => task.id === taskId);
     if (selectedTask) {
       setSearchTerm(selectedTask.title);
       setSelectedTaskId(taskId);
@@ -89,17 +74,25 @@ export default function SearchTask({
         value={searchTerm}
         onChange={handleInputChange}
       />
-      {tasksQuery.data && tasksQuery.data.results.length > 0 && (
+      {!isLoading && tasksData && tasksData.results.length > 0 && (
         <Select onValueChange={handleSelectChange} value={selectedTaskId}>
           <SelectTrigger>
-            <SelectValue placeholder="Select a task" />
+            <SelectValue
+              placeholder={`Available: ${tasksData.results.length}`}
+            />
           </SelectTrigger>
           <SelectContent>
-            {tasksQuery.data.results.map((task) => (
-              <SelectItem key={task.id} value={task.id}>
-                {task.title}
+            {tasksData.results.length > 0 ? (
+              tasksData.results.map((task) => (
+                <SelectItem key={task.id} value={task.id}>
+                  {task.title}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="" disabled>
+                No tasks found
               </SelectItem>
-            ))}
+            )}
           </SelectContent>
         </Select>
       )}
