@@ -24,11 +24,10 @@ export default function CreateEditEventButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant={event ? "outline" : "default"}>
+        <Button variant={event ? "ghost" : "default"}>
           {event ? (
             <>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Event
+              <Edit className="h-4 w-4" />
             </>
           ) : (
             <>

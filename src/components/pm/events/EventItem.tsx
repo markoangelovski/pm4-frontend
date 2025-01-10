@@ -2,7 +2,14 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, Clock, ChevronDown, ChevronUp, Edit2 } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Edit2,
+  CheckSquare,
+} from "lucide-react";
 import { format } from "date-fns";
 import LogsList from "./LogsList";
 import { PmEvent } from "@/types";
@@ -16,7 +23,6 @@ import {
 } from "@/hooks/use-events";
 import CreateEditEventButton from "./CreateEditEventButton";
 import AddLogDialog from "./AddLogDialog";
-import { Button } from "@/components/ui/button";
 
 interface EventItemProps {
   event: PmEvent;
@@ -38,8 +44,6 @@ export default function EventItem({ event }: EventItemProps) {
       eventTitleInputRef.current.focus();
     }
   }, [isEditingEventTitle]);
-
-  const totalDuration = event.logs.reduce((sum, log) => sum + log.duration, 0);
 
   const handleUpdateEventTitle = async () => {
     setIsEditingEventTitle(false);
@@ -89,78 +93,87 @@ export default function EventItem({ event }: EventItemProps) {
     }
   };
 
+  const totalDuration = event.logs.reduce((sum, log) => sum + log.duration, 0);
+
   return (
-    <div className="border rounded-lg p-4 shadow-sm relative min-h-[120px]">
-      <CreateEditEventButton event={event} />
+    <div className="border rounded-lg p-4 shadow-sm ">
+      <div className="grid grid-cols-3">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center">
+            {isEditingEventTitle ? (
+              <input
+                ref={eventTitleInputRef}
+                type="text"
+                value={editedEventTitle}
+                onChange={(e) => setEditedEventTitle(e.target.value)}
+                onBlur={handleUpdateEventTitle}
+                className="text-lg font-semibold w-full"
+              />
+            ) : (
+              <h3
+                className="text-lg font-semibold cursor-pointer"
+                onClick={() => setIsEditingEventTitle(true)}
+              >
+                {event.title}
+                <Edit2 className="w-4 h-4 inline-block ml-2 text-gray-500" />
+              </h3>
+            )}
+          </div>
 
-      <DeleteButton
-        variant="ghost"
-        title={event.title}
-        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-        onDelete={handleDeleteEvent}
-      />
-
-      <div className="mb-2">
-        {isEditingEventTitle ? (
-          <input
-            ref={eventTitleInputRef}
-            type="text"
-            value={editedEventTitle}
-            onChange={(e) => setEditedEventTitle(e.target.value)}
-            onBlur={handleUpdateEventTitle}
-            className="text-lg font-semibold w-full"
-          />
-        ) : (
-          <h3
-            className="text-lg font-semibold cursor-pointer"
-            onClick={() => setIsEditingEventTitle(true)}
-          >
-            {event.title}
-            <Edit2 className="w-4 h-4 inline-block ml-2 text-gray-500" />
-          </h3>
-        )}
-
-        {event.task && (
-          <Link
-            href={`/tasks?taskId=${event.task.id}`}
-            className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-          >
-            <PixelArtCircle input={event.task.id} />
-            {event.task.title}
-          </Link>
-        )}
-      </div>
-
-      <div className="flex justify-between items-center mb-4">
-        <span className="text-sm text-gray-600 flex items-center gap-1">
-          <Calendar className="w-4 h-4" />
-          {format(new Date(event.day), "MMMM dd, yyyy")}
-        </span>
-      </div>
-
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-        <span className="text-3xl font-bold flex items-center justify-center gap-2">
-          <Clock className="w-6 h-6 text-gray-500" />
-          {totalDuration.toFixed(2)}h
-        </span>
-      </div>
-
-      <div className="flex justify-between items-center mt-2">
-        <button
-          onClick={() => setIsLogsOpen(!isLogsOpen)}
-          className="text-sm text-gray-600 flex items-center gap-1"
-        >
-          {isLogsOpen ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
+          {event.task && (
+            <Link
+              href={`/tasks?taskId=${event.task.id}`}
+              className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+            >
+              <PixelArtCircle input={event.task.id} />
+              {event.task.title}
+            </Link>
           )}
-          {isLogsOpen ? "Hide Logs" : "Show Logs"}
-        </button>
-        <AddLogDialog
-          eventId={event.id}
-          onSuccess={() => setIsLogsOpen(true)}
-        />
+
+          <div className="">
+            <span className="text-sm text-gray-600 flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              {format(new Date(event.day), "MMMM dd, yyyy")}
+            </span>
+          </div>
+
+          {event.logs.length > 0 && (
+            <button
+              onClick={() => setIsLogsOpen(!isLogsOpen)}
+              className="text-sm text-gray-600 flex items-center gap-1"
+            >
+              {isLogsOpen ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
+              {isLogsOpen ? "Hide Logs" : "Show Logs"}
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center justify-center">
+          <span className="text-3xl font-bold flex items-center gap-2">
+            <Clock className="w-6 h-6 text-gray-500" />
+            {totalDuration.toFixed(2)}h
+          </span>
+        </div>
+
+        <div className="flex flex-col items-end justify-between">
+          <div>
+            <CreateEditEventButton event={event} />
+            <DeleteButton
+              variant="ghost"
+              title={event.title}
+              className="text-red-500 hover:text-red-700"
+              onDelete={handleDeleteEvent}
+            />
+          </div>
+          <AddLogDialog
+            eventId={event.id}
+            onSuccess={() => setIsLogsOpen(true)}
+          />
+        </div>
       </div>
 
       {isLogsOpen && (
