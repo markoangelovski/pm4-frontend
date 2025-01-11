@@ -63,33 +63,29 @@ export default function MultiMonthCalendar({ days }: MultiMonthCalendarProps) {
   };
 
   return (
-    <div className="space-y-4 border rounded-md">
-      {Object.entries(groupedDates).map(([monthKey, dates]) => {
-        const [year, month] = monthKey.split("-").map(Number);
-        return (
-          //   <div key={monthKey} className="border rounded-lg p-4">
-          // <h2 className="text-lg font-semibold mb-4">
-          //   {new Date(year, month - 1).toLocaleString("default", {
-          //     month: "long",
-          //     year: "numeric",
-          //   })}
-          // </h2>
-          <Calendar
-            key={monthKey}
-            mode="single"
-            selected={selectedDay}
-            onSelect={handleDateSelect}
-            className=""
-            month={new Date(year, month - 1)}
-            modifiers={{ marked: dates }}
-            modifiersStyles={{
-              marked: { backgroundColor: "lightblue", borderRadius: "50%" },
-            }}
-            disabled={(date) => !isDateMarked(date)}
-          />
-          //   </div>
-        );
-      })}
+    <div className="flex justify-center">
+      <div className="inline-block space-y-4">
+        <>
+          {Object.entries(groupedDates).map(([monthKey, dates]) => {
+            const [year, month] = monthKey.split("-").map(Number);
+            return (
+              <Calendar
+                key={monthKey}
+                mode="single"
+                selected={selectedDay}
+                onSelect={handleDateSelect}
+                className="border rounded-md"
+                month={new Date(year, month - 1)}
+                modifiers={{ marked: dates }}
+                modifiersStyles={{
+                  marked: { backgroundColor: "lightblue", borderRadius: "50%" },
+                }}
+                disabled={(date) => !isDateMarked(date)}
+              />
+            );
+          })}
+        </>
+      </div>
     </div>
   );
 }

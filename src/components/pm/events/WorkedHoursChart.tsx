@@ -7,20 +7,36 @@ interface WorkedHoursChartProps {
   events: PmEvent[];
 }
 
-const renderActiveShape = (props: any) => {
-  const RADIAN = Math.PI / 180;
+// Define the expected properties for active shape rendering
+interface CustomActiveShapeProps {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+  payload: { title: string };
+  value: number;
+}
+
+const renderActiveShape = (props: unknown): JSX.Element => {
+  // Type assertion to cast `props` to the correct type
   const {
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    startAngle,
-    endAngle,
-    fill,
-    payload,
-    value,
-  } = props;
+    cx = 0,
+    cy = 0,
+    midAngle = 0,
+    innerRadius = 0,
+    outerRadius = 0,
+    startAngle = 0,
+    endAngle = 0,
+    fill = "#000",
+    payload = { title: "" },
+    value = 0,
+  } = props as CustomActiveShapeProps;
+
+  const RADIAN = Math.PI / 180;
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
   const sx = cx + (outerRadius + 10) * cos;
@@ -57,7 +73,6 @@ const renderActiveShape = (props: any) => {
         fill="none"
       />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      {/* Display title and duration below each other */}
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
@@ -90,10 +105,8 @@ const WorkedHoursChart: FC<WorkedHoursChartProps> = ({ events }) => {
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
-  // Calculate total duration
   const totalDuration = data.reduce((sum, event) => sum + event.value, 0);
 
-  // Add the remainder segment
   const remainderDuration =
     totalDuration > MAX_DURATION
       ? totalDuration - MAX_DURATION
@@ -111,7 +124,6 @@ const WorkedHoursChart: FC<WorkedHoursChartProps> = ({ events }) => {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
-        {/* Total duration in the middle of the chart */}
         <text
           x="50%"
           y="50%"

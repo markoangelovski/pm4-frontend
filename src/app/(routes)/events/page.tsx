@@ -21,25 +21,27 @@ export default function Events() {
   return (
     <>
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={75} style={{ overflow: "auto" }}>
+        <ResizablePanel defaultSize={80} style={{ overflow: "auto" }}>
           <div className="mr-6 space-y-4">
             <div className="space-x-4">
               <NewEventButton />
               <DayPicker />
             </div>
 
-            {isEventsLoading && <EventsSkeleton h="32" />}
+            {isEventsLoading && <EventsSkeleton />}
             <EventsList events={eventsData?.results || []} />
           </div>
         </ResizablePanel>
 
-        <ResizableHandle />
+        <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={25} style={{ overflow: "auto" }}>
+        <ResizablePanel defaultSize={20} style={{ overflow: "auto" }}>
           <div className="ml-6 space-y-4">
             <div className="">
               {isEventsLoading ? (
-                <Skeleton className={`h-48 w-48 rounded-full mx-auto my-12`} />
+                <div className="h-[300px] flex justify-center items-center">
+                  <Skeleton className={`h-48 w-48 rounded-full`} />
+                </div>
               ) : (
                 <WorkedHoursChart events={eventsData?.results || []} />
               )}
@@ -47,12 +49,10 @@ export default function Events() {
 
             <DayRangePicker />
 
-            {isEventsLoading ? (
-              <Skeleton className={`h-56 w-56 mx-auto`} />
+            {isDaysLoading ? (
+              <Skeleton className={`h-72 w-56 mx-auto`} />
             ) : (
-              <>
-                <MultiMonthCalendar days={daysData?.results || []} />{" "}
-              </>
+              <MultiMonthCalendar days={daysData?.results || []} />
             )}
           </div>
         </ResizablePanel>
@@ -61,12 +61,12 @@ export default function Events() {
   );
 }
 
-function EventsSkeleton({ h }: { h: string }) {
+function EventsSkeleton() {
   return (
     <div className="space-y-4">
-      <Skeleton className={`h-32 h-${h}`} />
-      <Skeleton className={`h-32 h-${h}`} />
-      <Skeleton className={`h-32 h-${h}`} />
+      <Skeleton className="h-[170px]" />
+      <Skeleton className="h-[170px]" />
+      <Skeleton className="h-[170px]" />
     </div>
   );
 }

@@ -61,14 +61,14 @@ export default function DayRangePicker() {
   }, [searchParams, router]);
 
   return (
-    <div className="grid gap-2">
+    <div className="flex justify-center">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-[250px] font-normal",
               !date && "text-muted-foreground"
             )}
           >
