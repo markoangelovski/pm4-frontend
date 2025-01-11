@@ -72,3 +72,7 @@ export interface PmEvent {
   logs: Log[];
   task: TaskFromServer | null;
 }
+
+export interface Day {
+  day: string;
+}

@@ -25,7 +25,9 @@ export default function DayPicker() {
     if (selectedDate) {
       setDate(selectedDate);
       const formattedDate = format(selectedDate, "yyyy-MM-dd");
-      router.push(`?day=${formattedDate}`); // Update query parameter
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("day", formattedDate);
+      router.push(`?${params.toString()}`); // Update query parameter
       setIsOpen(false); // Close the popover
     }
   };
@@ -51,7 +53,7 @@ export default function DayPicker() {
         <Button
           variant={"outline"}
           className={cn(
-            "w-[240px] justify-start text-left font-normal mb-6",
+            "w-[240px] justify-start text-left font-normal",
             !date && "text-muted-foreground"
           )}
         >

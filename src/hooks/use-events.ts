@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/utils";
-import { Log, PmEvent, Response } from "@/types";
+import { Day, Log, PmEvent, Response } from "@/types";
 import { useSearchParams } from "next/navigation";
 import { toast } from "./use-toast";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const eventsPath = process.env.NEXT_PUBLIC_EVENTS_PATH;
+const daysPath = process.env.NEXT_PUBLIC_DAYS_PATH;
 const logsPath = process.env.NEXT_PUBLIC_LOGS_PATH;
 
 export const useEventsQuery = () => {
@@ -21,6 +22,23 @@ export const useEventsQuery = () => {
   return useQuery({
     queryKey: ["events", { taskId, day }],
     queryFn: (): Promise<Response<PmEvent>> => fetchWithAuth(url.toString()),
+    retry: false,
+  });
+};
+
+export const useDaysQuery = () => {
+  const url = new URL(`${backendUrl}${daysPath}`);
+  const searchParams = useSearchParams();
+
+  const start = searchParams.get("start");
+  const end = searchParams.get("end");
+
+  if (start) url.searchParams.append("start", start);
+  if (end) url.searchParams.append("end", end);
+
+  return useQuery({
+    queryKey: ["days", { start, end }],
+    queryFn: (): Promise<Response<Day>> => fetchWithAuth(url.toString()),
     retry: false,
   });
 };
