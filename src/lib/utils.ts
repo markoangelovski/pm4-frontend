@@ -12,6 +12,38 @@ export async function prettyStatus(status: string) {
     .join(" ");
 }
 
+/**
+ * Generate a hex color code from a UUID.
+ * @param uuid - A string representing a valid UUID.
+ * @returns A string representing a hex color code in the format "#RRGGBB".
+ * @throws Error if the input is not a valid UUID.
+ */
+export function createColor(uuid: string): string {
+  // Regular expression to validate UUID format
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  // Validate the UUID input
+  if (!uuidRegex.test(uuid)) {
+    throw new Error("Invalid UUID format");
+  }
+
+  // Split the UUID into its sections
+  const sections = uuid.split("-");
+
+  // Use the first, third, and fifth sections to calculate RGB
+  const red = parseInt(sections[0].slice(0, 2), 16); // First two characters of the first section
+  const green = parseInt(sections[2].slice(0, 2), 16); // First two characters of the third section
+  const blue = parseInt(sections[4].slice(0, 2), 16); // First two characters of the fifth section
+
+  // Format as a hex color code
+  const color = `#${red.toString(16).padStart(2, "0")}${green
+    .toString(16)
+    .padStart(2, "0")}${blue.toString(16).padStart(2, "0")}`;
+
+  return color.toUpperCase(); // Return uppercase hex color
+}
+
 export async function fetchWithAuth<T>(
   url: string,
   options?: { method?: "GET" | "POST" | "PATCH" | "DELETE"; body?: T }

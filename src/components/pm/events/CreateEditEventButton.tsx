@@ -37,7 +37,7 @@ export default function CreateEditEventButton({
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogTitle>
           {event ? "Edit Event " + event.title : "New Event"}
         </DialogTitle>

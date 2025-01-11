@@ -2,14 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import {
-  Calendar,
-  Clock,
-  ChevronDown,
-  ChevronUp,
-  Edit2,
-  CheckSquare,
-} from "lucide-react";
+import { Calendar, Clock, ChevronDown, ChevronUp, Edit2 } from "lucide-react";
 import { format } from "date-fns";
 import LogsList from "./LogsList";
 import { PmEvent } from "@/types";
@@ -23,6 +16,7 @@ import {
 } from "@/hooks/use-events";
 import CreateEditEventButton from "./CreateEditEventButton";
 import AddLogDialog from "./AddLogDialog";
+import { createColor } from "@/lib/utils";
 
 interface EventItemProps {
   event: PmEvent;
@@ -111,9 +105,13 @@ export default function EventItem({ event }: EventItemProps) {
               />
             ) : (
               <h3
-                className="text-lg font-semibold cursor-pointer"
+                className="text-lg font-semibold cursor-pointer flex items-center gap-2"
                 onClick={() => setIsEditingEventTitle(true)}
               >
+                <div
+                  className="w-6 h-6 rounded-full overflow-hidden"
+                  style={{ backgroundColor: createColor(event.id) }}
+                ></div>
                 {event.title}
                 <Edit2 className="w-4 h-4 inline-block ml-2 text-gray-500" />
               </h3>
@@ -125,7 +123,7 @@ export default function EventItem({ event }: EventItemProps) {
               href={`/tasks?taskId=${event.task.id}`}
               className="text-sm text-blue-600 hover:underline flex items-center gap-1"
             >
-              <PixelArtCircle input={event.task.id} />
+              <PixelArtCircle input={event.task.id} className="w-4 h-4" />
               {event.task.title}
             </Link>
           )}

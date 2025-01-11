@@ -57,7 +57,7 @@ export default function CreateEditEventForm({
       logTitle: event ? undefined : "",
       duration: event?.logs[0]?.duration || 0.25,
       taskId: event?.task?.id || "",
-      day: event ? event.day : defaultDay,
+      day: event ? event.day.split("T")[0] : defaultDay,
     },
   });
 
