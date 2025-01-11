@@ -1,6 +1,6 @@
 import { createColor } from "@/lib/utils";
 import { PmEvent } from "@/types";
-import React, { useState } from "react";
+import { FC, useState } from "react";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
 
 interface WorkedHoursChartProps {
@@ -79,7 +79,7 @@ const renderActiveShape = (props: any) => {
   );
 };
 
-const WorkedHoursChart: React.FC<WorkedHoursChartProps> = ({ events }) => {
+const WorkedHoursChart: FC<WorkedHoursChartProps> = ({ events }) => {
   const data = events.map((event) => ({
     title: event.title,
     value: event.logs.reduce((sum, log) => sum + log.duration, 0),
@@ -119,7 +119,7 @@ const WorkedHoursChart: React.FC<WorkedHoursChartProps> = ({ events }) => {
           dominantBaseline="middle"
           style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-          {`${totalDuration.toFixed(2)}h`}
+          {`${totalDuration.toFixed(2)}h / ${remainderDuration.toFixed(2)}h`}
         </text>
         <Pie
           activeIndex={activeIndex}

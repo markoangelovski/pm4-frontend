@@ -12,6 +12,20 @@ export async function prettyStatus(status: string) {
     .join(" ");
 }
 
+export function groupDatesByMonth(dates: string[]): Record<string, Date[]> {
+  return dates.reduce((acc, dateString) => {
+    const date = new Date(dateString);
+    const monthKey = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}`;
+    if (!acc[monthKey]) {
+      acc[monthKey] = [];
+    }
+    acc[monthKey].push(date);
+    return acc;
+  }, {} as Record<string, Date[]>);
+}
+
 /**
  * Generate a hex color code from a UUID.
  * @param uuid - A string representing a valid UUID.

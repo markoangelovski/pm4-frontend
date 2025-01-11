@@ -11,8 +11,8 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import DayRangePicker from "@/components/pm/events/DayRangePicker";
-import DaysList from "@/components/pm/events/DaysList";
 import WorkedHoursChart from "@/components/pm/events/WorkedHoursChart";
+import MultiMonthCalendar from "@/components/pm/events/MultiMonthCalendar";
 
 export default function Events() {
   const { data: eventsData, isLoading: isEventsLoading } = useEventsQuery();
@@ -35,7 +35,7 @@ export default function Events() {
 
         <ResizableHandle />
 
-        <ResizablePanel defaultSize={25}>
+        <ResizablePanel defaultSize={25} style={{ overflow: "auto" }}>
           <div className="ml-6 space-y-4">
             <div className="">
               {isEventsLoading ? (
@@ -47,8 +47,13 @@ export default function Events() {
 
             <DayRangePicker />
 
-            {isDaysLoading && <EventsSkeleton h="8" />}
-            <DaysList days={daysData?.results || []} />
+            {isEventsLoading ? (
+              <Skeleton className={`h-56 w-56 mx-auto`} />
+            ) : (
+              <>
+                <MultiMonthCalendar days={daysData?.results || []} />{" "}
+              </>
+            )}
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
