@@ -7,9 +7,8 @@ import { toast } from "./use-toast";
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const eventsPath = process.env.NEXT_PUBLIC_EVENTS_PATH;
 const daysPath = process.env.NEXT_PUBLIC_DAYS_PATH;
-const logsPath = process.env.NEXT_PUBLIC_LOGS_PATH;
-const daysBasePath = process.env.NEXT_PUBLIC_DAYS_BASE_PATH;
 const daysSinglePath = process.env.NEXT_PUBLIC_DAYS_SINGLE_PATH;
+const logsPath = process.env.NEXT_PUBLIC_LOGS_PATH;
 
 export const useEventsQuery = () => {
   const url = new URL(`${backendUrl}${eventsPath}`);
@@ -301,7 +300,7 @@ export const useEditDayMutation = () => {
   return useMutation({
     mutationFn: (payload: Day): Promise<Response<Day>> =>
       fetchWithAuth(
-        `${backendUrl}${daysBasePath}/${payload.id}?start=${payload.start}`,
+        `${backendUrl}${daysPath}/${payload.id}?start=${payload.start}`,
         {
           method: "PATCH",
         }
@@ -314,7 +313,9 @@ export const useEditDayMutation = () => {
             ? {
                 ...oldData,
                 results: oldData.results.map((day) =>
-                  day.id === variables.id ? data.results[0] : day
+                  day.id === variables.id
+                    ? { ...oldData.results[0], ...data.results[0] }
+                    : day
                 ),
               }
             : data;

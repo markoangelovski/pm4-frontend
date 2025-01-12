@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
 import { useDaysSingleQuery, useEditDayMutation } from "@/hooks/use-events";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlarmClock, Clock, Edit2, Play } from "lucide-react";
@@ -15,14 +14,22 @@ const formatTime = (time: number): string => {
 };
 
 interface TimeDisplayProps {
+  loading: boolean;
+  dayId: string;
+  start: number;
   workedDuration: number;
 }
 
-export default function TimeDisplay({ workedDuration }: TimeDisplayProps) {
+export default function TimeDisplay({
+  loading,
+  dayId,
+  start,
+  workedDuration,
+}: TimeDisplayProps) {
   const [currentTime, setCurrentTime] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: dayData, isLoading, error } = useDaysSingleQuery();
+  // const { data: dayData, isLoading, error } = useDaysSingleQuery();
   const editDayMutation = useEditDayMutation();
 
   useEffect(() => {
@@ -38,20 +45,20 @@ export default function TimeDisplay({ workedDuration }: TimeDisplayProps) {
   }, []);
 
   useEffect(() => {
-    if (dayData?.results[0]) {
-      const totalTime = dayData.results[0].start + workedDuration;
+    if (start) {
+      const totalTime = start + workedDuration;
       setValueC(formatTime(totalTime));
     }
-  }, [workedDuration, dayData]);
+  }, [workedDuration, start]);
 
   const [valueB, setValueB] = useState<number>(0);
   const [valueC, setValueC] = useState<string>("");
 
   useEffect(() => {
-    if (dayData?.results[0]) {
-      setValueB(dayData.results[0].start);
+    if (start) {
+      setValueB(start);
     }
-  }, [dayData]);
+  }, [start]);
 
   const handleValueBClick = () => {
     setIsEditing(true);
@@ -63,12 +70,10 @@ export default function TimeDisplay({ workedDuration }: TimeDisplayProps) {
 
   const handleValueBBlur = () => {
     setIsEditing(false);
-    if (dayData?.results[0]) {
-      editDayMutation.mutate({ id: dayData.results[0].id, start: valueB });
+    if (start) {
+      editDayMutation.mutate({ id: dayId, start: valueB });
     }
   };
-
-  if (error) return <div>Error: {(error as Error).message}</div>;
 
   return (
     <div className="inline-flex items-center space-x-4 px-2 py-1.5 bg-background rounded-md border border-input">
@@ -100,7 +105,7 @@ export default function TimeDisplay({ workedDuration }: TimeDisplayProps) {
       <div className="text-muted-foreground">|</div>
       <div className="flex items-center space-x-2">
         <AlarmClock className="h-4 w-4 text-gray-400" />
-        {isLoading ? (
+        {loading ? (
           <Skeleton className="w-10 h-4 rounded" />
         ) : (
           <div>{valueC}</div>

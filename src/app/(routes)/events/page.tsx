@@ -4,7 +4,11 @@ import DayPicker from "@/components/pm/events/DayPicker";
 import EventsList from "@/components/pm/events/EventsList";
 import NewEventButton from "@/components/pm/events/CreateEditEventButton";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDaysQuery, useEventsQuery } from "@/hooks/use-events";
+import {
+  useDaysQuery,
+  useDaysSingleQuery,
+  useEventsQuery,
+} from "@/hooks/use-events";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -13,20 +17,22 @@ import {
 import DayRangePicker from "@/components/pm/events/DayRangePicker";
 import WorkedHoursChart from "@/components/pm/events/WorkedHoursChart";
 import MultiMonthCalendar from "@/components/pm/events/MultiMonthCalendar";
-import { useRouter, useSearchParams } from "next/navigation";
 import TimeDisplay from "@/components/pm/time/TimeDisplay";
 
 export default function Events() {
-  const { data: eventsData, isLoading: isEventsLoading } = useEventsQuery();
+  const { data: dayData, isLoading: isDayLoading } = useDaysSingleQuery();
   const { data: daysData, isLoading: isDaysLoading } = useDaysQuery();
 
-  const workedDuration = eventsData?.results.reduce((eventAcc, event) => {
-    const eventDuration = event.logs.reduce(
-      (logAcc, log) => logAcc + log.duration,
-      0
-    );
-    return eventAcc + eventDuration;
-  }, 0);
+  const workedDuration = dayData?.results[0].events?.reduce(
+    (eventAcc, event) => {
+      const eventDuration = event.logs.reduce(
+        (logAcc, log) => logAcc + log.duration,
+        0
+      );
+      return eventAcc + eventDuration;
+    },
+    0
+  );
 
   return (
     <>
@@ -36,11 +42,16 @@ export default function Events() {
             <div className="space-x-4">
               <NewEventButton />
               <DayPicker />
-              <TimeDisplay workedDuration={workedDuration || 0} />
+              <TimeDisplay
+                loading={isDayLoading}
+                dayId={dayData?.results[0].id || ""}
+                start={dayData?.results[0].start || 0}
+                workedDuration={workedDuration || 0}
+              />
             </div>
 
-            {isEventsLoading && <EventsSkeleton />}
-            <EventsList events={eventsData?.results || []} />
+            {isDayLoading && <EventsSkeleton />}
+            <EventsList events={dayData?.results[0].events || []} />
           </div>
         </ResizablePanel>
 
@@ -49,12 +60,12 @@ export default function Events() {
         <ResizablePanel defaultSize={20} style={{ overflow: "auto" }}>
           <div className="ml-6 space-y-4">
             <div className="">
-              {isEventsLoading ? (
+              {isDayLoading ? (
                 <div className="h-[300px] flex justify-center items-center">
                   <Skeleton className={`h-48 w-48 rounded-full`} />
                 </div>
               ) : (
-                <WorkedHoursChart events={eventsData?.results || []} />
+                <WorkedHoursChart events={dayData?.results[0].events || []} />
               )}
             </div>
 
