@@ -13,10 +13,20 @@ import {
 import DayRangePicker from "@/components/pm/events/DayRangePicker";
 import WorkedHoursChart from "@/components/pm/events/WorkedHoursChart";
 import MultiMonthCalendar from "@/components/pm/events/MultiMonthCalendar";
+import { useRouter, useSearchParams } from "next/navigation";
+import TimeDisplay from "@/components/pm/time/TimeDisplay";
 
 export default function Events() {
   const { data: eventsData, isLoading: isEventsLoading } = useEventsQuery();
   const { data: daysData, isLoading: isDaysLoading } = useDaysQuery();
+
+  const workedDuration = eventsData?.results.reduce((eventAcc, event) => {
+    const eventDuration = event.logs.reduce(
+      (logAcc, log) => logAcc + log.duration,
+      0
+    );
+    return eventAcc + eventDuration;
+  }, 0);
 
   return (
     <>
@@ -26,6 +36,7 @@ export default function Events() {
             <div className="space-x-4">
               <NewEventButton />
               <DayPicker />
+              <TimeDisplay workedDuration={workedDuration || 0} />
             </div>
 
             {isEventsLoading && <EventsSkeleton />}

@@ -152,7 +152,7 @@ export default function EventItem({ event }: EventItemProps) {
 
         <div className="flex items-center justify-center">
           <span className="text-3xl font-bold flex items-center gap-2">
-            <Clock className="w-6 h-6 text-gray-500" />
+            <Clock className="w-6 h-6 text-gray-400" />
             {totalDuration.toFixed(2)}h
           </span>
         </div>

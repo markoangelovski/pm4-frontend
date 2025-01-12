@@ -1,6 +1,7 @@
 import { Log } from "@/types";
 import { useState, useRef, useEffect } from "react";
 import { DeleteButton } from "../common/delete-button";
+import { Edit2 } from "lucide-react";
 
 interface LogsListProps {
   logs: Log[];
@@ -70,6 +71,7 @@ export default function LogsList({
                 }}
               >
                 {log.title}
+                <Edit2 className="w-3 h-3 inline-block ml-2 text-gray-500" />
               </span>
               <span
                 className="mx-2 cursor-pointer"

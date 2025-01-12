@@ -8,6 +8,8 @@ const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const eventsPath = process.env.NEXT_PUBLIC_EVENTS_PATH;
 const daysPath = process.env.NEXT_PUBLIC_DAYS_PATH;
 const logsPath = process.env.NEXT_PUBLIC_LOGS_PATH;
+const daysBasePath = process.env.NEXT_PUBLIC_DAYS_BASE_PATH;
+const daysSinglePath = process.env.NEXT_PUBLIC_DAYS_SINGLE_PATH;
 
 export const useEventsQuery = () => {
   const url = new URL(`${backendUrl}${eventsPath}`);
@@ -271,6 +273,53 @@ export const useDeleteLogMutation = () => {
         title: "Error",
         description: error.message,
       });
+    },
+  });
+};
+
+export const useDaysSingleQuery = () => {
+  const url = new URL(`${backendUrl}${daysSinglePath}`);
+  const searchParams = useSearchParams();
+
+  const day = searchParams.get("day");
+
+  if (day) url.searchParams.append("day", day);
+
+  return useQuery({
+    queryKey: ["day", { day }],
+    queryFn: (): Promise<Response<Day>> => fetchWithAuth(url.toString()),
+    retry: false,
+  });
+};
+
+export const useEditDayMutation = () => {
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+
+  const day = searchParams.get("day");
+
+  return useMutation({
+    mutationFn: (payload: Day): Promise<Response<Day>> =>
+      fetchWithAuth(
+        `${backendUrl}${daysBasePath}/${payload.id}?start=${payload.start}`,
+        {
+          method: "PATCH",
+        }
+      ),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(
+        ["day", { day }],
+        (oldData: Response<Day> | undefined) => {
+          return oldData
+            ? {
+                ...oldData,
+                results: oldData.results.map((day) =>
+                  day.id === variables.id ? data.results[0] : day
+                ),
+              }
+            : data;
+        }
+      );
     },
   });
 };

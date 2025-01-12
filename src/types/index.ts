@@ -74,5 +74,7 @@ export interface PmEvent {
 }
 
 export interface Day {
-  day: string;
+  id: string;
+  start: number;
+  day?: string;
 }
