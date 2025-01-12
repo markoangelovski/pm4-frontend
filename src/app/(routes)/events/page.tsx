@@ -4,11 +4,7 @@ import DayPicker from "@/components/pm/events/DayPicker";
 import EventsList from "@/components/pm/events/EventsList";
 import NewEventButton from "@/components/pm/events/CreateEditEventButton";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  useDaysQuery,
-  useDaysSingleQuery,
-  useEventsQuery,
-} from "@/hooks/use-events";
+import { useDaysQuery, useDaysSingleQuery } from "@/hooks/use-events";
 import {
   ResizableHandle,
   ResizablePanel,

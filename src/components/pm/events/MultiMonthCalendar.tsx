@@ -19,7 +19,7 @@ export default function MultiMonthCalendar({ days }: MultiMonthCalendarProps) {
     return day ? new Date(day) : undefined;
   });
 
-  const groupedDates = groupDatesByMonth(days.map((d) => d.day));
+  const groupedDates = groupDatesByMonth(days.map((d) => d?.day || ""));
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
@@ -54,7 +54,7 @@ export default function MultiMonthCalendar({ days }: MultiMonthCalendarProps) {
     );
 
     return days.some((d) => {
-      const dayDate = new Date(d.day);
+      const dayDate = new Date(d?.day || "");
       const dayDateUtc = new Date(
         Date.UTC(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate())
       );
