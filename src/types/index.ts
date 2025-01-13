@@ -57,6 +57,7 @@ export interface TaskFromServerWithProject extends TaskFromServer {
 
 export interface Log {
   id: string;
+  eventId: string;
   title: string;
   duration: number;
   createdAt: string;
@@ -67,6 +68,7 @@ export interface PmEvent {
   id: string;
   title: string;
   day: string;
+  dayId: string;
   createdAt: string;
   modifiedAt: string;
   logs: Log[];
@@ -76,6 +78,11 @@ export interface PmEvent {
 export interface Day {
   id: string;
   start: number;
+  day?: string;
+  events?: PmEvent[];
+}
+
+export interface Stat {
   day?: string;
   events?: PmEvent[];
 }

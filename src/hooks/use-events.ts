@@ -10,22 +10,22 @@ const daysPath = process.env.NEXT_PUBLIC_DAYS_PATH;
 const daysSinglePath = process.env.NEXT_PUBLIC_DAYS_SINGLE_PATH;
 const logsPath = process.env.NEXT_PUBLIC_LOGS_PATH;
 
-export const useEventsQuery = () => {
-  const url = new URL(`${backendUrl}${eventsPath}`);
-  const searchParams = useSearchParams();
+// export const useEventsQuery = () => {
+//   const url = new URL(`${backendUrl}${eventsPath}`);
+//   const searchParams = useSearchParams();
 
-  const taskId = searchParams.get("taskId");
-  const day = searchParams.get("day");
+//   const taskId = searchParams.get("taskId");
+//   const day = searchParams.get("day");
 
-  if (taskId) url.searchParams.append("taskId", taskId);
-  if (day) url.searchParams.append("day", day);
+//   if (taskId) url.searchParams.append("taskId", taskId);
+//   if (day) url.searchParams.append("day", day);
 
-  return useQuery({
-    queryKey: ["events", { taskId, day }],
-    queryFn: (): Promise<Response<PmEvent>> => fetchWithAuth(url.toString()),
-    retry: false,
-  });
-};
+//   return useQuery({
+//     queryKey: ["events", { taskId, day }],
+//     queryFn: (): Promise<Response<PmEvent>> => fetchWithAuth(url.toString()),
+//     retry: false,
+//   });
+// };
 
 export const useDaysQuery = () => {
   const url = new URL(`${backendUrl}${daysPath}`);
@@ -55,10 +55,8 @@ interface CreateEventPayload {
 
 export const useCreateEventMutation = () => {
   const queryClient = useQueryClient();
-
   const searchParams = useSearchParams();
 
-  const taskId = searchParams.get("taskId");
   const day = searchParams.get("day");
 
   return useMutation({
@@ -69,13 +67,22 @@ export const useCreateEventMutation = () => {
       }),
     onSuccess: (data) => {
       queryClient.setQueryData(
-        ["events", { taskId, day }],
-        (oldData: Response<PmEvent> | undefined) => {
+        ["day", { day }],
+        (oldData: Response<Day> | undefined) => {
+          const eventToAdd = data.results[0];
           return oldData
             ? {
                 ...oldData,
-                results: [...oldData.results, data.results[0]],
-                totalResults: oldData.totalResults + 1,
+                results: oldData.results.map((day) =>
+                  day.id === eventToAdd.dayId
+                    ? {
+                        ...day,
+                        events: day.events
+                          ? [...day.events, eventToAdd]
+                          : [eventToAdd], // Ensure events is always an array
+                      }
+                    : day
+                ),
               }
             : data;
         }
@@ -92,7 +99,6 @@ export const useEditEventMutation = () => {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
 
-  const taskId = searchParams.get("taskId");
   const day = searchParams.get("day");
 
   return useMutation({
@@ -102,7 +108,7 @@ export const useEditEventMutation = () => {
         body: payload,
       }),
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["events", { taskId, day }] });
+      queryClient.refetchQueries({ queryKey: ["day", { day }] });
     },
   });
 };
@@ -111,7 +117,6 @@ export const useDeleteEventMutation = () => {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
 
-  const taskId = searchParams.get("taskId");
   const day = searchParams.get("day");
 
   return useMutation({
@@ -121,12 +126,17 @@ export const useDeleteEventMutation = () => {
       }),
     onSuccess: (_, variables) => {
       queryClient.setQueryData(
-        ["events", { taskId, day }],
-        (oldData: Response<PmEvent> | undefined) => {
+        ["day", { day }],
+        (oldData: Response<Day> | undefined) => {
           return oldData
             ? {
                 ...oldData,
-                results: oldData.results.filter((p) => p.id !== variables),
+                results: oldData.results.map((result) => ({
+                  ...result,
+                  events: result?.events?.filter(
+                    (event) => event.id !== variables
+                  ),
+                })),
               }
             : oldData;
         }
@@ -154,7 +164,6 @@ export const useCreateLogMutation = () => {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
 
-  const taskId = searchParams.get("taskId");
   const day = searchParams.get("day");
 
   return useMutation({
@@ -165,19 +174,25 @@ export const useCreateLogMutation = () => {
       }),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(
-        ["events", { taskId, day }],
-        (oldData: Response<PmEvent> | undefined) => {
-          if (oldData) {
-            return {
-              ...oldData,
-              results: oldData.results.map((event) =>
-                event.id === variables.eventId
-                  ? { ...event, logs: [...event.logs, data.results[0]] }
-                  : event
-              ),
-            };
-          }
-          return oldData;
+        ["day", { day }],
+        (oldData: Response<Day> | undefined) => {
+          const logToAdd = data.results[0];
+          return oldData
+            ? {
+                ...oldData,
+                results: oldData.results.map((result) => ({
+                  ...result,
+                  events: result.events?.map((event) =>
+                    event.id === logToAdd.eventId
+                      ? {
+                          ...event,
+                          logs: [...event.logs, logToAdd],
+                        }
+                      : event
+                  ),
+                })),
+              }
+            : oldData;
         }
       );
     },
@@ -206,24 +221,26 @@ export const useEditLogMutation = () => {
       }),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(
-        ["events", { taskId, day }],
-        (oldData: Response<PmEvent> | undefined) => {
-          if (oldData) {
-            return {
-              ...oldData,
-              results: oldData.results.map((event) =>
-                event.id === variables.eventId
-                  ? {
-                      ...event,
-                      logs: event.logs.map((log) =>
-                        log.id === data.results[0].id ? data.results[0] : log
-                      ),
-                    }
-                  : event
-              ),
-            };
-          }
-          return oldData;
+        ["day", { day }],
+        (oldData: Response<Day> | undefined) => {
+          const logToUpdate = data.results[0];
+          return oldData
+            ? {
+                ...oldData,
+                results: oldData.results.map((result) => ({
+                  ...result,
+                  events: result?.events?.map((event) => ({
+                    ...event,
+                    logs: event.logs.map(
+                      (log) =>
+                        log.id === logToUpdate.id
+                          ? { ...log, ...logToUpdate } // Update the matching log
+                          : log // Keep other logs unchanged
+                    ),
+                  })),
+                })),
+              }
+            : oldData;
         }
       );
     },
@@ -234,7 +251,6 @@ export const useDeleteLogMutation = () => {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
 
-  const taskId = searchParams.get("taskId");
   const day = searchParams.get("day");
 
   return useMutation({
@@ -244,24 +260,26 @@ export const useDeleteLogMutation = () => {
       }),
     onSuccess: (_, variables) => {
       queryClient.setQueryData(
-        ["events", { taskId, day }],
-        (oldData: Response<PmEvent> | undefined) => {
-          if (oldData) {
-            return {
-              ...oldData,
-              results: oldData.results.map((event) =>
-                event.id === variables.eventId
-                  ? {
-                      ...event,
-                      logs: event.logs.filter(
-                        (log) => log.id !== variables.logId
-                      ),
-                    }
-                  : event
-              ),
-            };
-          }
-          return oldData;
+        ["day", { day }],
+        (oldData: Response<Day> | undefined) => {
+          const { logId, eventId } = variables;
+          return oldData
+            ? {
+                ...oldData,
+                results: oldData.results.map((result) => ({
+                  ...result,
+                  events: result?.events?.map(
+                    (event) =>
+                      event.id === eventId
+                        ? {
+                            ...event,
+                            logs: event.logs.filter((log) => log.id !== logId), // Remove the log with matching logId
+                          }
+                        : event // Keep other events unchanged
+                  ),
+                })),
+              }
+            : oldData;
         }
       );
     },

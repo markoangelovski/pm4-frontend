@@ -10,7 +10,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import DayRangePicker from "@/components/pm/events/DayRangePicker";
+import DayRangePicker from "@/components/pm/common/DayRangePicker";
 import WorkedHoursChart from "@/components/pm/events/WorkedHoursChart";
 import MultiMonthCalendar from "@/components/pm/events/MultiMonthCalendar";
 import TimeDisplay from "@/components/pm/time/TimeDisplay";
