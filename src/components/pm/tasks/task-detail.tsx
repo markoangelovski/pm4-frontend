@@ -7,9 +7,13 @@ import TitleDescription from "../common/TitleDescription";
 import { DetailPageSkeleton } from "../common/DetailPageSkeleton";
 import DetailPageCards from "../common/DetailPageCards";
 import { DeleteButton } from "../common/delete-button";
+import EventsList from "../events/EventsList";
+import { useEventsQuery } from "@/hooks/use-events";
+import { EventsSkeleton } from "@/app/(routes)/events/page";
 
 export default function TaskDetailPage({ taskId }: { taskId: string }) {
   const { data: taskData, isLoading: isTaskLoading } = useTaskQuery(taskId);
+  const { data: eventsData, isLoading: isEventsLoading } = useEventsQuery();
   const { mutate: deleteTaskCall } = useDeleteTaskMutation();
 
   if (isTaskLoading) return <DetailPageSkeleton />;
@@ -34,7 +38,9 @@ export default function TaskDetailPage({ taskId }: { taskId: string }) {
           projectId={taskData.results[0].projectId}
           task={taskData?.results[0]}
         />
-        <FilterSort />
+        {/* <FilterSort /> */}
+        {isEventsLoading && <EventsSkeleton />}
+        <EventsList events={eventsData?.results || []} />
       </div>
     </>
   );

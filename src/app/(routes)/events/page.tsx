@@ -79,7 +79,7 @@ export default function Events() {
   );
 }
 
-function EventsSkeleton() {
+export function EventsSkeleton() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-[170px]" />
