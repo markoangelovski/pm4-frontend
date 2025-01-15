@@ -9,7 +9,7 @@ import DetailPageCards from "../common/DetailPageCards";
 import { DeleteButton } from "../common/delete-button";
 import EventsList from "../events/EventsList";
 import { useEventsQuery } from "@/hooks/use-events";
-import { EventsSkeleton } from "@/app/(routes)/events/page";
+import { EventsSkeleton } from "../common/Skeletons";
 
 export default function TaskDetailPage({ taskId }: { taskId: string }) {
   const { data: taskData, isLoading: isTaskLoading } = useTaskQuery(taskId);

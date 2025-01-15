@@ -14,6 +14,7 @@ import DayRangePicker from "@/components/pm/common/DayRangePicker";
 import WorkedHoursChart from "@/components/pm/events/WorkedHoursChart";
 import MultiMonthCalendar from "@/components/pm/events/MultiMonthCalendar";
 import TimeDisplay from "@/components/pm/time/TimeDisplay";
+import { EventsSkeleton } from "@/components/pm/common/Skeletons";
 
 export default function Events() {
   const { data: dayData, isLoading: isDayLoading } = useDaysSingleQuery();
@@ -76,15 +77,5 @@ export default function Events() {
         </ResizablePanel>
       </ResizablePanelGroup>
     </>
-  );
-}
-
-export function EventsSkeleton() {
-  return (
-    <div className="space-y-4">
-      <Skeleton className="h-[170px]" />
-      <Skeleton className="h-[170px]" />
-      <Skeleton className="h-[170px]" />
-    </div>
   );
 }
