@@ -35,7 +35,7 @@ export default function ProjectList({
       result = result.filter(
         (project) =>
           project.title.toLowerCase().includes(lowerFilter) ||
-          project.pl.toLowerCase().includes(lowerFilter)
+          (project?.pl ?? "").toLowerCase().includes(lowerFilter)
       );
     }
 
@@ -46,7 +46,7 @@ export default function ProjectList({
           case "title":
             return a.title.localeCompare(b.title);
           case "pl":
-            return a.pl.localeCompare(b.pl);
+            return (a?.pl ?? "").localeCompare(b?.pl ?? "");
           case "created":
             return (
               new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()

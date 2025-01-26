@@ -37,7 +37,7 @@ export default function TaskList({
       result = result.filter(
         (task) =>
           task.title.toLowerCase().includes(lowerFilter) ||
-          task.pl.toLowerCase().includes(lowerFilter)
+          (task?.pl ?? "").toLowerCase().includes(lowerFilter)
       );
     }
 
@@ -48,7 +48,7 @@ export default function TaskList({
           case "title":
             return a.title.localeCompare(b.title);
           case "pl":
-            return a.pl.localeCompare(b.pl);
+            return (a?.pl ?? "").localeCompare(b.pl);
           case "created":
             return (
               new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -75,6 +75,7 @@ export default function TaskList({
             <TableHead>Title</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Project Lead</TableHead>
+            <TableHead>Project</TableHead>
             <TableHead>Created At</TableHead>
             <TableHead>Modified At</TableHead>
             <TableHead>Link</TableHead>
@@ -96,6 +97,7 @@ export default function TaskList({
                   {task.title}
                 </Link>
               </TableCell>
+
               <TableCell>{prettyStatus(task.status)}</TableCell>
 
               <TableCell>
@@ -110,6 +112,20 @@ export default function TaskList({
                   className="text-blue-600 hover:underline"
                 >
                   {task.pl}
+                </Link>
+              </TableCell>
+
+              <TableCell>
+                <Link
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(`/projects?projectId=${task.projectId}`);
+                  }}
+                  className="text-blue-600 hover:underline flex items-center"
+                >
+                  <PixelArtCircle input={task.projectId} className="mr-2" />
+                  {task.project.title}
                 </Link>
               </TableCell>
 

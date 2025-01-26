@@ -47,6 +47,7 @@ export interface Task {
 
 export interface TaskFromServer extends Task {
   id: string;
+  project: { title: string };
   createdAt: string;
   modifiedAt: string;
 }

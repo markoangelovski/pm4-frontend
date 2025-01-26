@@ -1,6 +1,7 @@
 "use client";
 
 import FilterSort from "@/components/pm/common/filter-sort";
+import PaginationComponent from "@/components/pm/pagination/PaginationComponent";
 import StatusSelect from "@/components/pm/tasks/StatusSelect";
 import TaskDetailPage from "@/components/pm/tasks/task-detail";
 import TaskList from "@/components/pm/tasks/task-list";
@@ -21,6 +22,11 @@ export default function Tasks() {
       <FilterSort />
       <StatusSelect />
       <TaskList tasksData={tasksData?.results || []} />
+      <PaginationComponent
+        limit={tasksData?.limit}
+        offset={tasksData?.offset}
+        totalResults={tasksData?.totalResults}
+      />
     </>
   );
 }

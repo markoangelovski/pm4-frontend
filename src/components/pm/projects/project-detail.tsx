@@ -12,6 +12,7 @@ import TitleDescription from "../common/TitleDescription";
 import { DetailPageSkeleton } from "../common/DetailPageSkeleton";
 import DetailPageCards from "../common/DetailPageCards";
 import { DeleteButton } from "../common/delete-button";
+import PaginationComponent from "../pagination/PaginationComponent";
 
 export default function ProjectDetailPage({
   projectId,
@@ -49,6 +50,11 @@ export default function ProjectDetailPage({
         <FilterSort />
         <StatusSelect />
         <TaskList tasksData={tasksData?.results || []} />
+        <PaginationComponent
+          limit={tasksData?.limit}
+          offset={tasksData?.offset}
+          totalResults={tasksData?.totalResults}
+        />
       </div>
     </>
   );

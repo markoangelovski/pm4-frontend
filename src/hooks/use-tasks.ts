@@ -20,23 +20,25 @@ export const useTasksQuery = () => {
 
   const projectId = searchParams.get("projectId");
   const status = searchParams.get("status");
-  const limit = searchParams.get("limit");
-  const offset = searchParams.get("offset");
   const pl = searchParams.get("pl");
   const q = searchParams.get("q");
 
   if (projectId) url.searchParams.append("projectId", projectId);
   if (status) url.searchParams.append("status", status);
-  if (limit) url.searchParams.append("limit", limit);
-  if (offset) url.searchParams.append("offset", offset);
   if (pl) url.searchParams.append("pl", pl);
   if (q) url.searchParams.append("q", q);
 
   const isEventsPage = pathname === "/events";
   const shouldDisable = isEventsPage && (!q || q.length < 3);
 
+  const page = searchParams.get("page");
+  const pageNum = Math.max(parseInt(page || "0") - 1, 0);
+  const offset = pageNum * 50;
+
+  if (offset) url.searchParams.append("offset", offset.toString());
+
   return useQuery({
-    queryKey: ["tasks", { projectId, status, limit, offset, pl, q }],
+    queryKey: ["tasks", { projectId, status, pl, q, offset }],
     queryFn: (): Promise<Response<TaskFromServer>> =>
       fetchWithAuth(url.toString()),
     retry: false,

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchWithAuth } from "../lib/utils";
-import { Project, ProjectFromServer, Response, User } from "@/types";
+import { ProjectFromServer, Response } from "@/types";
 import { ProjectFormData } from "@/components/pm/projects/project-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "./use-toast";
@@ -9,10 +9,19 @@ const backendUrl = process.env.NEXT_PUBLIC_BACKEND_ROOT_URL;
 const projectsPath = process.env.NEXT_PUBLIC_PROJECTS_PATH;
 
 export const useProjectsQuery = () => {
+  const url = new URL(`${backendUrl}${projectsPath}`);
+  const searchParams = useSearchParams();
+
+  const page = searchParams.get("page");
+  const pageNum = Math.max(parseInt(page || "0") - 1, 0);
+  const offset = pageNum * 50;
+
+  if (offset) url.searchParams.append("offset", offset.toString());
+
   return useQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", { offset }],
     queryFn: (): Promise<Response<ProjectFromServer>> =>
-      fetchWithAuth(`${backendUrl}${projectsPath}`),
+      fetchWithAuth(url.toString()),
     retry: false,
   });
 };
