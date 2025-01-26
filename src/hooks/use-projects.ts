@@ -37,6 +37,13 @@ export const useProjectQuery = (projectId: string) => {
 
 export const useCreateProjectMutation = () => {
   const queryClient = useQueryClient();
+
+  const searchParams = useSearchParams();
+
+  const page = searchParams.get("page");
+  const pageNum = Math.max(parseInt(page || "0") - 1, 0);
+  const offset = pageNum * 50;
+
   return useMutation({
     mutationFn: async (projectData: ProjectFormData) =>
       fetchWithAuth(`${backendUrl}${projectsPath}`, {
@@ -45,7 +52,7 @@ export const useCreateProjectMutation = () => {
       }),
     onSuccess: (data) => {
       queryClient.setQueryData(
-        ["projects"],
+        ["projects", { offset }],
         (oldData: Response<ProjectFromServer> | undefined) => {
           return oldData
             ? {
@@ -92,7 +99,12 @@ export const useEditProjectMutation = () => {
 export const useDeleteProjectMutation = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const projectId = searchParams.get("projectId");
+
+  const page = searchParams.get("page");
+  const pageNum = Math.max(parseInt(page || "0") - 1, 0);
+  const offset = pageNum * 50;
 
   const queryClient = useQueryClient();
   return useMutation({
@@ -102,7 +114,7 @@ export const useDeleteProjectMutation = () => {
       }),
     onSuccess: () => {
       queryClient.setQueryData(
-        ["projects"],
+        ["projects", { offset }],
         (oldData: Response<ProjectFromServer> | undefined) => {
           return oldData
             ? {

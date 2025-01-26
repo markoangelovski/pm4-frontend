@@ -9,19 +9,23 @@ import ProjectButtons from "@/components/pm/projects/project-button";
 import PaginationComponent from "@/components/pm/pagination/PaginationComponent";
 
 export default function Projects() {
-  const { data: projectsData } = useProjectsQuery();
+  const { data: projectsData, isLoading: isProjectsLoading } =
+    useProjectsQuery();
 
   const searchParams = useSearchParams();
 
   const projectId = searchParams.get("projectId");
 
   if (projectId) return <ProjectDetailPage projectId={projectId} />;
-  console.log("projectsData: ", projectsData);
+
   return (
     <>
       <ProjectButtons />
       <FilterSort />
-      <ProjectList projectsData={projectsData?.results || []} />
+      <ProjectList
+        isProjectsLoading={isProjectsLoading}
+        projectsData={projectsData?.results || []}
+      />
       <PaginationComponent
         limit={projectsData?.limit}
         offset={projectsData?.offset}

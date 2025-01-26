@@ -68,6 +68,8 @@ export function TaskForm({
     defaultValues: task
       ? {
           ...task,
+          description: task?.description ?? "",
+          pl: task?.pl ?? "",
           jiraLink: task?.jiraLink ?? "",
           dueDate: new Date(task.dueDate),
         }
@@ -128,9 +130,9 @@ export function TaskForm({
           name="pl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>PL</FormLabel>
+              <FormLabel>Project Lead</FormLabel>
               <FormControl>
-                <Input placeholder="PL" {...field} />
+                <Input placeholder="John Doe" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -156,39 +158,16 @@ export function TaskForm({
           control={form.control}
           name="dueDate"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem>
               <FormLabel>Due Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0))
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <FormControl>
+                <Input
+                  type="date"
+                  {...field}
+                  value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                  onChange={(e) => field.onChange(new Date(e.target.value))}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

@@ -75,12 +75,16 @@ export const useCreateTaskMutation = () => {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
 
+  const page = searchParams.get("page");
+  const pageNum = Math.max(parseInt(page || "0") - 1, 0);
+  const offset = pageNum * 50;
+
   const taskDeps = {
     projectId: searchParams.get("projectId"),
     status: searchParams.get("status"),
-    limit: searchParams.get("limit"),
-    offset: searchParams.get("offset"),
     pl: searchParams.get("pl"),
+    q: searchParams.get("q"),
+    offset,
   };
 
   return useMutation({

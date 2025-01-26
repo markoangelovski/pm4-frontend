@@ -17,10 +17,13 @@ import { format } from "date-fns";
 import { prettyStatus } from "@/lib/utils";
 import { Link2 } from "lucide-react";
 import DueDateCircle from "../common/DueDateCircle";
+import { TableRowsSkeleton } from "../common/Skeletons";
 
 export default function TaskList({
+  isTasksLoading,
   tasksData,
 }: {
+  isTasksLoading: boolean;
   tasksData: TaskFromServer[];
 }) {
   const router = useRouter();
@@ -73,8 +76,8 @@ export default function TaskList({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>#</TableHead>
             <TableHead>Title</TableHead>
-            {/* <TableHead>Status</TableHead> */}
             <TableHead>Project Lead</TableHead>
             <TableHead>Project</TableHead>
             <TableHead>Created At</TableHead>
@@ -84,8 +87,12 @@ export default function TaskList({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredAndSortedTasks.map((task) => (
+          {isTasksLoading && <TableRowsSkeleton columns={7} />}
+
+          {filteredAndSortedTasks.map((task, i) => (
             <TableRow key={task.id}>
+              <TableCell className="text-muted-foreground">{i + 1}</TableCell>
+
               <TableCell>
                 <Link
                   href="#"
@@ -99,8 +106,6 @@ export default function TaskList({
                   {task.title}
                 </Link>
               </TableCell>
-
-              {/* <TableCell>{prettyStatus(task.status)}</TableCell> */}
 
               <TableCell>
                 <Link
@@ -127,7 +132,7 @@ export default function TaskList({
                   className="text-blue-600 hover:underline flex items-center"
                 >
                   <PixelArtCircle input={task.projectId} className="mr-2" />
-                  {task.project.title}
+                  {task.project?.title ?? "Refresh me"}
                 </Link>
               </TableCell>
 

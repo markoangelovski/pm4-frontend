@@ -21,7 +21,7 @@ export default function ProjectDetailPage({
 }) {
   const { data: projectData, isLoading: isProjectLoading } =
     useProjectQuery(projectId);
-  const { data: tasksData, isLoading: isTasksLoading } = useTasksQuery(); // TODO: add Tasks loading skeleton
+  const { data: tasksData, isLoading: isTasksLoading } = useTasksQuery();
   const { mutate: deleteProjectCall } = useDeleteProjectMutation();
 
   if (isProjectLoading) return <DetailPageSkeleton />;
@@ -49,7 +49,10 @@ export default function ProjectDetailPage({
         <TaskButtons projectId={projectData.results[0].id} />
         <FilterSort />
         <StatusSelect />
-        <TaskList tasksData={tasksData?.results || []} />
+        <TaskList
+          isTasksLoading={isTasksLoading}
+          tasksData={tasksData?.results || []}
+        />
         <PaginationComponent
           limit={tasksData?.limit}
           offset={tasksData?.offset}

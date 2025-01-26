@@ -25,6 +25,10 @@ export default function TaskDetailPage({ taskId }: { taskId: string }) {
         <TitleDescription
           data={taskData?.results[0]}
           buttons={[
+            <TaskButtons
+              projectId={taskData.results[0].projectId}
+              task={taskData?.results[0]}
+            />,
             <DeleteButton
               key="delete-button"
               title={taskData?.results[0].title}
@@ -34,10 +38,10 @@ export default function TaskDetailPage({ taskId }: { taskId: string }) {
           ]}
         />
         <DetailPageCards data={taskData?.results[0]} />
-        <TaskButtons
+        {/* <TaskButtons
           projectId={taskData.results[0].projectId}
           task={taskData?.results[0]}
-        />
+        /> */}
         {/* <FilterSort /> */}
         {isEventsLoading && <EventsSkeleton />}
         <EventsList events={eventsData?.results || []} />

@@ -9,7 +9,7 @@ import { useTasksQuery } from "@/hooks/use-tasks";
 import { useSearchParams } from "next/navigation";
 
 export default function Tasks() {
-  const { data: tasksData } = useTasksQuery();
+  const { data: tasksData, isLoading: isTasksLoading } = useTasksQuery();
 
   const searchParams = useSearchParams();
 
@@ -21,7 +21,10 @@ export default function Tasks() {
     <>
       <FilterSort />
       <StatusSelect />
-      <TaskList tasksData={tasksData?.results || []} />
+      <TaskList
+        isTasksLoading={isTasksLoading}
+        tasksData={tasksData?.results || []}
+      />
       <PaginationComponent
         limit={tasksData?.limit}
         offset={tasksData?.offset}

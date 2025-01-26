@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  pl: z.string().min(1, "Project Lead is required"),
+  pl: z.string(),
 });
 
 export type ProjectFormData = z.infer<typeof formSchema>;
@@ -31,11 +31,17 @@ interface ProjectFormProps {
 export function ProjectForm({ initialData, onSubmit }: ProjectFormProps) {
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      title: "",
-      description: "",
-      pl: "",
-    },
+    defaultValues: initialData
+      ? {
+          title: initialData.title || "",
+          description: initialData.description || "",
+          pl: initialData.pl || "",
+        }
+      : {
+          title: "",
+          description: "",
+          pl: "",
+        },
   });
 
   return (

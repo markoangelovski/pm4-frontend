@@ -11,13 +11,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Project, ProjectFromServer } from "@/types";
+import { ProjectFromServer } from "@/types";
 import PixelArtCircle from "../common/PixelArtCircle";
 import { format } from "date-fns";
+import { TableRowsSkeleton } from "../common/Skeletons";
 
 export default function ProjectList({
+  isProjectsLoading,
   projectsData,
 }: {
+  isProjectsLoading: boolean;
   projectsData: ProjectFromServer[];
 }) {
   const router = useRouter();
@@ -75,6 +78,7 @@ export default function ProjectList({
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>#</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Project Lead</TableHead>
           <TableHead>Created At</TableHead>
@@ -82,8 +86,12 @@ export default function ProjectList({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {filteredAndSortedProjects.map((project) => (
+        {isProjectsLoading && <TableRowsSkeleton columns={7} />}
+
+        {filteredAndSortedProjects.map((project, i) => (
           <TableRow key={project.id}>
+            <TableCell className="text-muted-foreground">{i + 1}</TableCell>
+
             <TableCell>
               <Link
                 href="#"
@@ -97,8 +105,11 @@ export default function ProjectList({
                 {project.title}
               </Link>
             </TableCell>
+
             <TableCell>{project.pl}</TableCell>
+
             <TableCell>{format(project.createdAt, "MMMM dd, yyyy")}</TableCell>
+
             <TableCell>{format(project.modifiedAt, "MMMM dd, yyyy")}</TableCell>
           </TableRow>
         ))}
