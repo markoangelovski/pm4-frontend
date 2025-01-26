@@ -16,6 +16,7 @@ import PixelArtCircle from "../common/PixelArtCircle";
 import { format } from "date-fns";
 import { prettyStatus } from "@/lib/utils";
 import { Link2 } from "lucide-react";
+import DueDateCircle from "../common/DueDateCircle";
 
 export default function TaskList({
   tasksData,
@@ -73,11 +74,12 @@ export default function TaskList({
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
-            <TableHead>Status</TableHead>
+            {/* <TableHead>Status</TableHead> */}
             <TableHead>Project Lead</TableHead>
             <TableHead>Project</TableHead>
             <TableHead>Created At</TableHead>
             <TableHead>Modified At</TableHead>
+            <TableHead>Due date</TableHead>
             <TableHead>Link</TableHead>
           </TableRow>
         </TableHeader>
@@ -98,7 +100,7 @@ export default function TaskList({
                 </Link>
               </TableCell>
 
-              <TableCell>{prettyStatus(task.status)}</TableCell>
+              {/* <TableCell>{prettyStatus(task.status)}</TableCell> */}
 
               <TableCell>
                 <Link
@@ -130,7 +132,14 @@ export default function TaskList({
               </TableCell>
 
               <TableCell>{format(task.createdAt, "MMMM dd, yyyy")}</TableCell>
+
               <TableCell>{format(task.modifiedAt, "MMMM dd, yyyy")}</TableCell>
+
+              <TableCell className="flex items-center">
+                <DueDateCircle dateString={task.dueDate} className="mr-2" />
+                {format(task.dueDate, "MMMM dd, yyyy")}
+              </TableCell>
+
               <TableCell>
                 {task.jiraLink && (
                   <Link

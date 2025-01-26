@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import PixelArtCircle from "./PixelArtCircle";
 import { useRouter, useSearchParams } from "next/navigation";
+import DueDateCircle from "./DueDateCircle";
 
 interface DetailPageCardsProps {
   data: ProjectFromServer | TaskFromServerWithProject;
@@ -148,7 +149,11 @@ export default function DetailPageCards({ data }: DetailPageCardsProps) {
           {type === "task" && "dueDate" in data && data.dueDate && (
             <div className="flex items-center space-x-2 text-gray-600">
               <CalendarSync className="w-5 h-5" />
-              <span>Due Date: {format(data.dueDate, "MMMM dd, yyyy")}</span>
+              <span className="flex items-center">
+                Due Date:
+                <DueDateCircle dateString={data.dueDate} className="mx-2" />
+                {format(data.dueDate, "MMMM dd, yyyy")}
+              </span>
             </div>
           )}
         </div>
